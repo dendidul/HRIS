@@ -1,0 +1,87 @@
+﻿@model HRIS.General.Model.TimeManagement.WorkGroupModel
+
+
+@{
+    ViewData["Title"] = "Edit WorkGroup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "Workgroup", FormMethod.Post, new { Id = "formCreateTimeFrame" }))
+{
+    <div class="panel panel-inverse">
+        <div class="panel-heading">
+            <div class="panel-heading-btn">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+            </div>
+            <h4 class="panel-title">Create</h4>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-6">
+                    <label>Workgroup Code</label>
+                    @Html.HiddenFor(model => model.id)
+                    @Html.TextBoxFor(model => model.workgroup_id, new { Class = "form-control", disabled = "true" })
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>Short Desc</label>
+                        @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", disabled = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Long Desc</label>
+                    @Html.TextAreaFor(model => model.long_desc, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Schedule Variant Id</label>
+                    @Html.TextBoxFor(model => model.schedule_variant_id, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Schedule Sequence</label>
+                    @Html.TextBoxFor(model => model.schedule_seq, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            @*<div class="row">
+                    <div class="col-6">
+                        <label>Duration Time</label>
+                        @Html.TextBoxFor(model => model.duration_time, new { Class = "form-control", required = "true" })
+                    </div>
+                </div>*@
+            <br />
+            <div class="row">
+                <div class="col-6">
+                   
+                    <a href="@Url.Action("Index","Workgroup")" class="btn btn-warning">Cancel</a>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+}
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            App.init();
+        });
+    </script>
+}
+
+
+

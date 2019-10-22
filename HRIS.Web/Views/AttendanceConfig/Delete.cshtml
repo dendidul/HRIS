@@ -1,0 +1,87 @@
+﻿@model HRIS.General.Model.TimeManagement.UnattendanceModel
+
+
+@{
+    ViewData["Title"] = "Delete Attendance Config";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "AttendanceConfig", FormMethod.Post, new { Id = "formCreateTimeFrame" }))
+{
+    <div class="panel panel-inverse">
+        <div class="panel-heading">
+            <div class="panel-heading-btn">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+            </div>
+            <h4 class="panel-title">Create</h4>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-6">
+                    <label>Attendance Code</label>
+                    @Html.HiddenFor(model => model.id, new { Class = "form-control" })
+                    @Html.TextBoxFor(model => model.unattendance_id, new { Class = "form-control", disabled = "true" })
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>Short Desc</label>
+                        @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", disabled = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Long Desc</label>
+                    @Html.TextAreaFor(model => model.long_desc, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Measure of Unit</label>
+                    @Html.TextBoxFor(model => model.un_attendance_unit, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Period</label>
+                    @Html.TextBoxFor(model => model.un_attendance_period, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label>Quota</label>
+                    @Html.TextBoxFor(model => model.un_attendance_quota, new { Class = "form-control", disabled = "true" })
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-6">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a href="@Url.Action("Index","AttendanceConfig")" class="btn btn-warning">Cancel</a>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+}
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            App.init();
+        });
+    </script>
+}
+
+
+

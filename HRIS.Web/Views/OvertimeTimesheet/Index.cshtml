@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "Overtime Timesheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-7">
+
+
+    <div class="panel panel-inverse">
+        <div class="panel-heading">
+            <div class="panel-heading-btn">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+            </div>
+            <h4 class="panel-title">Overtime Timesheet</h4>
+        </div>
+        <div class="panel-body col-6 ml-3">
+            <div class="row">
+                <div class="col-8">
+                    <label>From</label>
+                    @*@Html.TextBoxFor(model => model.area_code, new { Class = "form-control", required = "true" })*@
+                    <input type="text" class="form-control" id="txtFrom" required />
+                </div>
+
+                <div class="col-8">
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="text" class="form-control" id="txtTo" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <label>Area Id</label>
+                    <input type="text" class="form-control" id="txtAreaId" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <label>Workgroup Id</label>
+                    <input type="text" class="form-control" id="txtWorkgroupId" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <label>Employee Id</label>
+                    <input type="text" class="form-control" id="txtEmployeeId" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <label>Unattendance Type</label>
+                    <input type="text" class="form-control" id="txtUnattendanceType" required />
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-6">
+                    <button type="submit" class="btn btn-success">Search</button>
+                    @*<a href="@Url.Action("Index","Area")" class="btn btn-warning">Cancel</a>*@
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            App.init();
+            TableManageResponsive.init();
+        });
+    </script>
+}
+

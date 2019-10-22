@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRIS.General\HRIS.General.csproj" />
+    <ProjectReference Include="..\HRIS.Master.Model\HRIS.Master.Model.csproj" />
+    <ProjectReference Include="..\HRIS.Payroll.Model\HRIS.Payroll.Model.csproj" />
+    <ProjectReference Include="..\HRIS.PersonalAdmin.Model\HRIS.PersonalAdmin.Model.csproj" />
+    <ProjectReference Include="..\HRIS.TimeManagementModel\HRIS.TimeManagement.Model.csproj" />
+    <ProjectReference Include="..\HRIS.UserManagement.Model\HRIS.UserManagement.Model.csproj" />
+  </ItemGroup>
+
+</Project>
