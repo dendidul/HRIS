@@ -1,6 +1,5 @@
 ﻿@model HRIS.General.Model.Master.AreaModel
 
-
 @{
     ViewData["Title"] = "Create Area";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,61 +7,44 @@
 
 @using (Html.BeginForm("Create", "Area", FormMethod.Post, new { Id = "formCreateArea" }))
 {
-    <div class="panel panel-inverse">
-        <div class="panel-heading">
-            <div class="panel-heading-btn">
-                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
-                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
-                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
-            </div>
-            <h4 class="panel-title">Create</h4>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create Area</h5>
+            <small class="text-muted float-end">Master Data</small>
         </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-6">
-                    <label>Area Code</label>
-                    @Html.TextBoxFor(model => model.area_code, new { Class = "form-control", required = "true" })
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="area_code">Area Code</label>
+                    @Html.TextBoxFor(model => model.area_code, new { Class = "form-control", id = "area_code", required = "true", placeholder = "Enter Area Code" })
                 </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label>Short Desc</label>
-                        @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", required = "true" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label>Long Desc</label>
-                    @Html.TextAreaFor(model => model.long_desc, new { Class = "form-control" })
-                </div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-6">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <a href="@Url.Action("Index","Area")" class="btn btn-warning">Cancel</a>
+                <div class="col-md-6">
+                    <label class="form-label" for="short_desc">Short Desc</label>
+                    @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", id = "short_desc", required = "true", placeholder = "Enter Short Description" })
                 </div>
             </div>
 
+            <div class="row mb-4">
+                <div class="col-12">
+                    <label class="form-label" for="long_desc">Long Desc</label>
+                    @Html.TextAreaFor(model => model.long_desc, new { Class = "form-control", id = "long_desc", rows = "3", placeholder = "Enter Long Description" })
+                </div>
+            </div>
 
-
-
-
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Save
+                </button>
+                <a href="@Url.Action("Index", "Area")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
         </div>
     </div>
 }
 
-
-
 @section scripts{
-
     <script type="text/javascript">
         $(document).ready(function () {
-            App.init();
+            // Document ready initialization
         });
     </script>
 }
-
-
-

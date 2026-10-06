@@ -1,41 +1,51 @@
 ﻿@{
     List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl1 = ViewBag.Menu;
     List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl2 = ViewBag.Menu;
-    List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl3 = ViewBag.Menu;
 }
 
-<ul class="nav">
-    @foreach (var mp in MenuLvl1.Where(p => p.ParentMenuId == 0 && p.Level == 1).OrderBy(p => p.Sequence))
+<ul class="menu-inner py-1">
+    <!-- Dashboard Link -->
+    <li class="menu-item" id="menu-dashboard">
+        <a href="@Url.Action("Dashboard", "Home")" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+            <div data-i18n="Dashboard">Dashboard</div>
+        </a>
+    </li>
+
+    @if (MenuLvl1 != null)
     {
+        @foreach (var mp in MenuLvl1.Where(p => p.ParentMenuId == 0 && p.Level == 1).OrderBy(p => p.Sequence))
+        {
+            var children = MenuLvl2.Where(model => model.ParentMenuId == mp.MenuId && model.Level == 2).ToList();
+            var hasChild = children.Count > 0;
+            var iconClass = string.IsNullOrEmpty(mp.icon) ? "bx bx-grid-alt" : mp.icon;
+            
+            if (iconClass.Contains("fa-") || iconClass.Contains("ion-"))
+            {
+                iconClass = "bx bx-layer";
+            }
 
-        <li class="has-sub">
-            <a href="@mp.Link">
-                <b class="caret"></b>
-                <i class="@mp.icon"></i>
-                 <span>@mp.MenuNm</span>
+            <li class="menu-item">
+                <a href="@(hasChild ? "javascript:void(0);" : (string.IsNullOrEmpty(mp.Link) ? "javascript:void(0);" : mp.Link))" 
+                   class="menu-link @(hasChild ? "menu-toggle" : "")">
+                    <i class="menu-icon tf-icons @iconClass"></i>
+                    <div>@mp.MenuNm</div>
+                </a>
 
-				 
-            </a>
-            <ul class="sub-menu">
-
-                @foreach (var child in MenuLvl2.Where(model => model.ParentMenuId != 0 && model.Level == 2))
+                @if (hasChild)
                 {
-                    if (mp.MenuId == child.ParentMenuId)
-                    {
-                        <li>
-                            <a href="@child.Link">@child.MenuNm </a>
-                        </li>
-                    }
+                    <ul class="menu-sub">
+                        @foreach (var child in children)
+                        {
+                            <li class="menu-item">
+                                <a href="@child.Link" class="menu-link">
+                                    <div>@child.MenuNm</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
                 }
-            </ul>
-
-        </li>
+            </li>
+        }
     }
-    
-   
 </ul>
-
-
-
-
-
