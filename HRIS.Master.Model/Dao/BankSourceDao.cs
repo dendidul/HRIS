@@ -21,183 +21,107 @@ namespace HRIS.Master.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<BankSourceModel> GetAllBankSource()
         {
-            var data = new List<BankSourceModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-                    data = conn.Query<BankSourceModel>("sp_Mst_bank_sourcesSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
+                    const string sql = "SELECT * FROM bos_bank_sources WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<BankSourceModel>(sql).ToList();
                 }
             }
-            catch (Exception)
+            catch
             {
-                // Fallback to direct query if stored procedure does not exist in local db
-                try
-                {
-                    using (IDbConnection conn = Connection)
-                    {
-                        data = conn.Query<BankSourceModel>("SELECT * FROM bos_bank_sources WHERE del_flag = 0 OR del_flag IS NULL").ToList();
-                    }
-                }
-                catch
-                {
-                    data = new List<BankSourceModel>();
-                }
+                throw;
             }
-            return data;
         }
 
         public BankSourceModel GetBankSource(BankSourceModel model)
         {
-            var data = new BankSourceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-                    data = conn.Query<BankSourceModel>("sp_Mst_bank_sourcesSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    const string sql = "SELECT * FROM bos_bank_sources WHERE id = @Id;";
+                    return conn.Query<BankSourceModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }
-            catch (Exception)
+            catch
             {
-                try
-                {
-                    using (IDbConnection conn = Connection)
-                    {
-                        data = conn.Query<BankSourceModel>("SELECT * FROM bos_bank_sources WHERE id = @id", new { id = model.id }).FirstOrDefault();
-                    }
-                }
-                catch
-                {
-                    data = new BankSourceModel();
-                }
+                throw;
             }
-            return data;
         }
 
         public BankSourceModel CreateBankSource(BankSourceModel model)
         {
-            var data = new BankSourceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@bank_source_id", model.bank_source_id);
-                    param.Add("@rec_number", model.rec_number);
-                    param.Add("@bank_name", model.bank_name);
-                    param.Add("@created_by", model.created_by ?? "Admin");
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", 0);
-                    param.Add("@TRIAL268", "T");
-
-                    data = conn.Query<BankSourceModel>("sp_Mst_bank_sourcesInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    const string sql = @"
+                        INSERT INTO bos_bank_sources 
+                        (bank_source_id, rec_number, bank_name, created_by, created_date, del_flag)
+                        VALUES 
+                        (@bank_source_id, @rec_number, @bank_name, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<BankSourceModel>(sql, model).FirstOrDefault();
                 }
             }
-            catch (Exception)
+            catch
             {
-                try
-                {
-                    using (IDbConnection conn = Connection)
-                    {
-                        var sql = @"INSERT INTO bos_bank_sources (bank_source_id, rec_number, bank_name, created_by, created_date, del_flag) 
-                                    VALUES (@bank_source_id, @rec_number, @bank_name, @created_by, @created_date, 0);
-                                    RETURNING id;";
-                        conn.Execute(sql, model);
-                        data = model;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                throw;
             }
-            return data;
         }
 
         public BankSourceModel UpdateBankSource(BankSourceModel model)
         {
-            var data = new BankSourceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@bank_source_id", model.bank_source_id);
-                    param.Add("@rec_number", model.rec_number);
-                    param.Add("@bank_name", model.bank_name);
-                    param.Add("@modified_by", model.modified_by ?? "Admin");
-                    param.Add("@modified_date", DateTime.Now);
-
-                    data = conn.Query<BankSourceModel>("sp_Mst_bank_sourcesUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    const string sql = @"
+                        UPDATE bos_bank_sources SET 
+                            bank_source_id = @bank_source_id,
+                            rec_number = @rec_number,
+                            bank_name = @bank_name,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<BankSourceModel>(sql, model).FirstOrDefault();
                 }
             }
-            catch (Exception)
+            catch
             {
-                try
-                {
-                    using (IDbConnection conn = Connection)
-                    {
-                        var sql = @"UPDATE bos_bank_sources 
-                                    SET bank_source_id = @bank_source_id, rec_number = @rec_number, bank_name = @bank_name, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
-                                    WHERE id = @id";
-                        conn.Execute(sql, model);
-                        data = model;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                throw;
             }
-            return data;
         }
 
-        public void DeleteBankSource(BankSourceModel model)
+        public void DeleteBankSource(int id)
         {
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-
-                    conn.Execute("sp_Mst_bank_sourcesDelete", param, commandType: CommandType.StoredProcedure);
+                    const string sql = "UPDATE bos_bank_sources SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
                 }
             }
-            catch (Exception)
+            catch
             {
-                try
-                {
-                    using (IDbConnection conn = Connection)
-                    {
-                        conn.Execute("UPDATE bos_bank_sources SET del_flag = 1 WHERE id = @id", new { id = model.id });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                throw;
+            }
+        }
+
+        public void DeleteBankSource(BankSourceModel model)
+        {
+            if (model != null)
+            {
+                DeleteBankSource(model.id);
             }
         }
     }

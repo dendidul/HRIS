@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.UserManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.UserManagement.Model.Dao
 {
@@ -16,48 +15,28 @@ namespace HRIS.UserManagement.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public MenuDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<MenuModel> GetAllMenu()
         {
-            var data = new List<MenuModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<MenuModel>("sp_Usm_menuSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_menu WHERE del_flag = 0 OR del_flag IS NULL ORDER BY index ASC;";
+                    return conn.Query<MenuModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
-
     }
 }

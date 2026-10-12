@@ -75,19 +75,19 @@ namespace HRIS.General.Utility
             }
 
 
-            var data = new ErrorLogModel();
-            using (IDbConnection conn = Connection)
-            {
-                var param = new DynamicParameters();
-                param.Add("@ErrorSource", ErrorSource);
-                param.Add("@ErrorMessage", message);
-                param.Add("@FunctionName", functionName);
+            //var data = new ErrorLogModel();
+            //using (IDbConnection conn = Connection)
+            //{
+            //    var param = new DynamicParameters();
+            //    param.Add("@ErrorSource", ErrorSource);
+            //    param.Add("@ErrorMessage", message);
+            //    param.Add("@FunctionName", functionName);
 
 
-                data = conn.Query<ErrorLogModel>("sp_Tbl_Error_LogInsert", param,
-                           commandType: CommandType.StoredProcedure).FirstOrDefault();
+            //    data = conn.Query<ErrorLogModel>("sp_Tbl_Error_LogInsert", param,
+            //               commandType: CommandType.StoredProcedure).FirstOrDefault();
 
-            }
+            //}
 
 
 

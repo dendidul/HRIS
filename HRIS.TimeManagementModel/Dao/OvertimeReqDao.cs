@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.TimeManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.TimeManagement.Model.Dao
 {
@@ -16,165 +15,127 @@ namespace HRIS.TimeManagement.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public OvertimeReqDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<OvertimeRequestModel> GetAllOvertimeRequest()
         {
-            var data = new List<OvertimeRequestModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<OvertimeRequestModel>("sp_Tmn_overtime_requestsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = @"
+                        SELECT o.*, 
+                               o.created AS created_date,
+                               o.modified AS modified_date,
+                               p.person_code AS NIK,
+                               p.first_name AS EmployeeName,
+                               u.unit_id AS UnitCode
+                        FROM bos_overtime_requests o
+                        LEFT JOIN bos_people p ON o.employee_id = p.id
+                        LEFT JOIN bos_units u ON o.unit_id = u.id
+                        ORDER BY o.id ASC;";
+                    return conn.Query<OvertimeRequestModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public OvertimeRequestModel GetOvertimeRequest(OvertimeRequestModel model)
         {
-            var data = new OvertimeRequestModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<OvertimeRequestModel>("sp_Tmn_overtime_requestsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = @"
+                        SELECT o.*, 
+                               o.created AS created_date,
+                               o.modified AS modified_date,
+                               p.person_code AS NIK,
+                               p.first_name AS EmployeeName,
+                               u.unit_id AS UnitCode
+                        FROM bos_overtime_requests o
+                        LEFT JOIN bos_people p ON o.employee_id = p.id
+                        LEFT JOIN bos_units u ON o.unit_id = u.id
+                        WHERE o.id = @Id;";
+                    return conn.Query<OvertimeRequestModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public OvertimeRequestModel CreateOvertimeRequest(OvertimeRequestModel model)
         {
-            var data = new OvertimeRequestModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@employee_id", model.employee_id);
-                    param.Add("@unit_id", model.unit_id);
-                    param.Add("@description", model.description);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@request_status", model.request_status);
-              
-                    param.Add("@del_flag", model.del_flag);
-
-
-                    data = conn.Query<OvertimeRequestModel>("sp_Tmn_overtime_requestsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_overtime_requests 
+                        (employee_id, unit_id, description, doc_number, created, created_by, request_status)
+                        VALUES 
+                        (@employee_id, @unit_id, @description, @doc_number, CURRENT_TIMESTAMP, @created_by, COALESCE(@request_status, 'Open'))
+                        RETURNING *, created AS created_date;";
+                    return conn.Query<OvertimeRequestModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public OvertimeRequestModel UpdateOvertimeRequest(OvertimeRequestModel model)
         {
-            var data = new OvertimeRequestModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@doc_number", model.doc_number);
-                    param.Add("@employee_id", model.employee_id);
-                    param.Add("@unit_id", model.unit_id);
-                    param.Add("@description", model.description);
-                    param.Add("@request_status", model.request_status);                
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@del_flag", model.del_flag);
-
-
-
-                    data = conn.Query<OvertimeRequestModel>("sp_Tmn_overtime_requestsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_overtime_requests SET 
+                            employee_id = @employee_id,
+                            unit_id = @unit_id,
+                            description = @description,
+                            doc_number = @doc_number,
+                            request_status = @request_status,
+                            modified = CURRENT_TIMESTAMP,
+                            modified_by = @modified_by
+                        WHERE id = @id
+                        RETURNING *, modified AS modified_date;";
+                    return conn.Query<OvertimeRequestModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteOvertimeRequest(int id)
         {
-            var data = new OvertimeRequestModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Tmn_overtime_requestsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "DELETE FROM bos_overtime_requests WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.Master;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.Master.Model.Dao
 {
@@ -16,161 +15,104 @@ namespace HRIS.Master.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public EmployeeGroupDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
-
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<EmployeeGroupModel> GetAllEmployeeGroup()
         {
-            var data = new List<EmployeeGroupModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<EmployeeGroupModel>("sp_Mst_employee_groupsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_employee_groups WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<EmployeeGroupModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeGroupModel GetEmployeeGroup(EmployeeGroupModel model)
         {
-            var data = new EmployeeGroupModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<EmployeeGroupModel>("sp_Mst_employee_groupsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT * FROM bos_employee_groups WHERE id = @Id;";
+                    return conn.Query<EmployeeGroupModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeGroupModel CreateEmployeeGroup(EmployeeGroupModel model)
         {
-            var data = new EmployeeGroupModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@Group_code", model.Group_code);
-                    param.Add("@short_desc", model.long_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@del_flag", model.del_flag);
-                  
-
-
-                    data = conn.Query<EmployeeGroupModel>("sp_Mst_employee_groupsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_employee_groups 
+                        (group_code, short_desc, long_desc, del_flag)
+                        VALUES 
+                        (@Group_code, @short_desc, @long_desc, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<EmployeeGroupModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeGroupModel UpdateEmployeeGroup(EmployeeGroupModel model)
         {
-            var data = new EmployeeGroupModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@Group_code", model.Group_code);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@del_flag", model.del_flag);
-                
-
-
-                    data = conn.Query<EmployeeGroupModel>("sp_Mst_employee_groupsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_employee_groups SET 
+                            group_code = @Group_code,
+                            short_desc = @short_desc,
+                            long_desc = @long_desc,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<EmployeeGroupModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteEmployeeGroup(int id)
         {
-            var data = new EmployeeGroupModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Mst_employee_groupsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_employee_groups SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
-
     }
 }

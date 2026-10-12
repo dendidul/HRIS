@@ -1,13 +1,12 @@
-﻿using Dapper;
-using HRIS.General.Utility;
+using Dapper;
 using HRIS.General.Model.Master;
+using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.Master.Model.Dao
 {
@@ -16,168 +15,108 @@ namespace HRIS.Master.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public PositionDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<PositionModel> GetAllPosition()
         {
-            var data = new List<PositionModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<PositionModel>("sp_Mst_positionsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_positions WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<PositionModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public PositionModel GetPosition(PositionModel model)
         {
-            var data = new PositionModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<PositionModel>("sp_Mst_positionsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT * FROM bos_positions WHERE id = @Id;";
+                    return conn.Query<PositionModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public PositionModel CreatePosition(PositionModel model)
         {
-            var data = new PositionModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@short_description", model.short_description);
-                    param.Add("@long_description", model.long_description);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL284", "T");
-
-
-                    data = conn.Query<PositionModel>("sp_Mst_positionsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_positions 
+                        (position_id, short_description, long_description, begin_date, end_date, created_by, created_date, del_flag)
+                        VALUES 
+                        (@position_id, @short_description, @long_description, @begin_date, @end_date, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<PositionModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public PositionModel UpdatePosition(PositionModel model)
         {
-            var data = new PositionModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@short_description", model.short_description);
-                    param.Add("@long_description", model.long_description);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL284", "T");
-
-
-                    data = conn.Query<PositionModel>("sp_Mst_positionsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_positions SET 
+                            position_id = @position_id,
+                            short_description = @short_description,
+                            long_description = @long_description,
+                            begin_date = @begin_date,
+                            end_date = @end_date,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<PositionModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeletePosition(int id)
         {
-            var data = new PositionModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Mst_positionsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_positions SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
-
     }
 }

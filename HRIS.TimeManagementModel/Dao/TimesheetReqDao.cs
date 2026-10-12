@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.TimeManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.TimeManagement.Model.Dao
 {
@@ -16,172 +15,125 @@ namespace HRIS.TimeManagement.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public TimesheetReqDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<TimesheetReqModel> GetAllTimesheetReq()
         {
-            var data = new List<TimesheetReqModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<TimesheetReqModel>("sp_Tmn_timesheet_reqsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = @"
+                        SELECT t.*, 
+                               t.flag_delete AS del_flag,
+                               p.person_code AS NIK,
+                               p.first_name AS EmployeeName
+                        FROM bos_timesheet_reqs t
+                        LEFT JOIN bos_people p ON t.employee_id = p.id
+                        WHERE t.flag_delete = 0 OR t.flag_delete IS NULL
+                        ORDER BY t.id ASC;";
+                    return conn.Query<TimesheetReqModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimesheetReqModel GetTimesheetReq(TimesheetReqModel model)
         {
-            var data = new TimesheetReqModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<TimesheetReqModel>("sp_Tmn_timesheet_reqsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = @"
+                        SELECT t.*, 
+                               t.flag_delete AS del_flag,
+                               p.person_code AS NIK,
+                               p.first_name AS EmployeeName
+                        FROM bos_timesheet_reqs t
+                        LEFT JOIN bos_people p ON t.employee_id = p.id
+                        WHERE t.id = @Id;";
+                    return conn.Query<TimesheetReqModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimesheetReqModel CreateTimesheetReq(TimesheetReqModel model)
         {
-            var data = new TimesheetReqModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                 
-                    param.Add("@employee_id", model.employee_id);
-                    param.Add("@transaction_date", model.transaction_date);
-                    param.Add("@time_in", model.time_in);
-                    param.Add("@time_out", model.time_out);
-                    param.Add("@request_note", model.request_note);
-                    param.Add("@request_status", model.request_status);
-                    param.Add("@created_by", model.created_by);               
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@remarks", model.remarks);
-
-
-                    data = conn.Query<TimesheetReqModel>("sp_Tmn_timesheet_reqsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_timesheet_reqs 
+                        (employee_id, transaction_date, time_in, time_out, request_note, request_status, created_by, created_date, flag_delete, note)
+                        VALUES 
+                        (@employee_id, @transaction_date, @time_in, @time_out, @request_note, COALESCE(@request_status, 'Open'), @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0), @remarks)
+                        RETURNING *, flag_delete AS del_flag;";
+                    return conn.Query<TimesheetReqModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimesheetReqModel UpdateTimesheetReq(TimesheetReqModel model)
         {
-            var data = new TimesheetReqModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@employee_id", model.employee_id);
-                    param.Add("@transaction_date", model.transaction_date);
-                    param.Add("@time_in", model.time_in);
-                    param.Add("@time_out", model.time_out);
-                    param.Add("@request_note", model.request_note);
-                    param.Add("@request_status", model.request_status);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", model.modified_date);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@remarks", DateTime.Now);
-                  
-
-
-
-                    data = conn.Query<TimesheetReqModel>("sp_Tmn_timesheet_reqsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_timesheet_reqs SET 
+                            employee_id = @employee_id,
+                            transaction_date = @transaction_date,
+                            time_in = @time_in,
+                            time_out = @time_out,
+                            request_note = @request_note,
+                            request_status = @request_status,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            flag_delete = COALESCE(@del_flag, flag_delete),
+                            note = @remarks
+                        WHERE id = @id
+                        RETURNING *, flag_delete AS del_flag;";
+                    return conn.Query<TimesheetReqModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteTimesheetReq(int id)
         {
-            var data = new UnattendanceModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Tmn_timesheet_reqsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_timesheet_reqs SET flag_delete = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
     }
 }

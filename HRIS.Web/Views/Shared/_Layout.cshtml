@@ -275,6 +275,21 @@
         }
 
         $(document).ready(function () {
+            // Submenu accordion toggle handler (handles both static and dynamic menu items)
+            $(document).on('click', '#layout-menu .menu-toggle', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $menuItem = $(this).closest('.menu-item');
+                if ($menuItem.hasClass('open')) {
+                    $menuItem.removeClass('open');
+                } else {
+                    if ($menuItem.parent().hasClass('menu-inner')) {
+                        $menuItem.siblings('.menu-item.open').removeClass('open');
+                    }
+                    $menuItem.addClass('open');
+                }
+            });
+
             // Load dynamic menu
             var menuUrl = "@Url.Action("SetMenu", "GlobalAccessMenu")";
             $.ajax({
@@ -285,6 +300,19 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     $("#menu").html(data);
+
+                    // Initialize Sneat Menu instance if available
+                    var layoutMenuEl = document.getElementById('layout-menu');
+                    if (layoutMenuEl && typeof Menu !== 'undefined' && !window.Helpers.mainMenu) {
+                        try {
+                            window.Helpers.mainMenu = new Menu(layoutMenuEl, {
+                                orientation: 'vertical',
+                                closeChildren: false
+                            });
+                        } catch (err) {
+                            console.warn('Menu instance init notice:', err);
+                        }
+                    }
                     
                     // Highlight active menu item based on current URL path
                     var currentPath = window.location.pathname.toLowerCase();

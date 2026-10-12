@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.Master;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.Master.Model.Dao
 {
@@ -16,163 +15,105 @@ namespace HRIS.Master.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public CostCenterDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<CostCenterModel> GetAllCostCenter()
         {
-            var data = new List<CostCenterModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-                
-
-
-                    data = conn.Query<CostCenterModel>("sp_Mst_cost_centersSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_cost_centers WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<CostCenterModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CostCenterModel GetCostCenter(CostCenterModel model)
         {
-            var data = new CostCenterModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<CostCenterModel>("sp_Mst_cost_centersSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT * FROM bos_cost_centers WHERE id = @Id;";
+                    return conn.Query<CostCenterModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CostCenterModel CreateCostCenter(CostCenterModel model)
         {
-            var data = new CostCenterModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@cost_center_code", model.cost_center_code);
-                    param.Add("@description", model.description);                  
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL271", "T");
-
-
-                    data = conn.Query<CostCenterModel>("sp_Mst_cost_centersInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_cost_centers 
+                        (cost_center_code, description, begin_date, end_date, del_flag)
+                        VALUES 
+                        (@cost_center_code, @description, @begin_date, @end_date, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<CostCenterModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CostCenterModel UpdateCostCenter(CostCenterModel model)
         {
-            var data = new CostCenterModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@cost_center_code", model.cost_center_code);
-                    param.Add("@description", model.description);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL271", "T");
-                  
-
-
-                    data = conn.Query<CostCenterModel>("sp_Mst_cost_centersUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_cost_centers SET 
+                            cost_center_code = @cost_center_code,
+                            description = @description,
+                            begin_date = @begin_date,
+                            end_date = @end_date,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<CostCenterModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteCostCenter(int id)
         {
-            var data = new CostCenterModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Mst_cost_centersDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_cost_centers SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
     }
 }

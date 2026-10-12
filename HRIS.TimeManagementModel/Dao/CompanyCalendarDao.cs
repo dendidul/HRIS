@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.TimeManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,16 +7,13 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.TimeManagement.Model.Dao
 {
     public class CompanyCalendarDao
     {
-
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
-
 
         public CompanyCalendarDao(IConfiguration config)
         {
@@ -24,158 +21,114 @@ namespace HRIS.TimeManagement.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<CompanyCalendarModel> GetAllCompanyCalendar()
         {
-            var data = new List<CompanyCalendarModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<CompanyCalendarModel>("sp_Tmn_company_calendarsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = @"
+                        SELECT c.*, 
+                               c.delete_flag AS del_flag, 
+                               a.area_code, 
+                               w.workgroup_id AS workgroup_code, 
+                               u.unattendance_id AS attendance_code 
+                        FROM bos_company_calendars c
+                        LEFT JOIN bos_areas a ON c.personal_area_id = a.id
+                        LEFT JOIN bos_workgroups w ON c.workgroup_id = w.id
+                        LEFT JOIN bos_unattendances u ON c.unattendance_id = u.id
+                        WHERE c.delete_flag = 0 OR c.delete_flag IS NULL
+                        ORDER BY c.id ASC;";
+                    return conn.Query<CompanyCalendarModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CompanyCalendarModel GetCompanyCalendar(CompanyCalendarModel model)
         {
-            var data = new CompanyCalendarModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<CompanyCalendarModel>("sp_Tmn_company_calendarsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_company_calendars WHERE id = @Id;";
+                    return conn.Query<CompanyCalendarModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CompanyCalendarModel CreateCompanyCalendar(CompanyCalendarModel model)
         {
-            var data = new CompanyCalendarModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@personal_area_id", model.personal_area_id);
-                    param.Add("@workgroup_id", model.workgroup_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@remark", model.remark);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-                    data = conn.Query<CompanyCalendarModel>("sp_Tmn_company_calendarsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_company_calendars 
+                        (personal_area_id, workgroup_id, begin_date, end_date, unattendance_id, remark, created_by, created_date, delete_flag)
+                        VALUES 
+                        (@personal_area_id, @workgroup_id, @begin_date, @end_date, @unattendance_id, @remark, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<CompanyCalendarModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public CompanyCalendarModel UpdateCompanyCalendar(CompanyCalendarModel model)
         {
-            var data = new CompanyCalendarModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@personal_area_id", model.personal_area_id);
-                    param.Add("@workgroup_id", model.workgroup_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@remark", model.remark);
-                    param.Add("@modified_by",model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-
-                    data = conn.Query<CompanyCalendarModel>("sp_Tmn_company_calendarsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_company_calendars SET 
+                            personal_area_id = @personal_area_id,
+                            workgroup_id = @workgroup_id,
+                            begin_date = @begin_date,
+                            end_date = @end_date,
+                            unattendance_id = @unattendance_id,
+                            remark = @remark,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            delete_flag = COALESCE(@del_flag, delete_flag)
+                        WHERE id = @id
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<CompanyCalendarModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteCompanyCalendar(int id)
         {
-            var data = new CompanyCalendarModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Tmn_company_calendarsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_company_calendars SET delete_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
     }
 }

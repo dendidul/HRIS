@@ -1,6 +1,5 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.UserManagement;
-using HRIS.General.Model.ViewModel;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.UserManagement.Model.Dao
 {
@@ -17,164 +15,125 @@ namespace HRIS.UserManagement.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public RoleDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<RolesModel> GetAllRoles()
         {
-            var data = new List<RolesModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<RolesModel>("sp_Usm_rolesSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = @"
+                        SELECT id, 
+                               role_id, 
+                               role_desc, 
+                               created_by, 
+                               modified_by, 
+                               created AS ""createdDate"", 
+                               modified AS ""modifiedDate"",
+                               0 AS del_flag
+                        FROM bos_roles 
+                        ORDER BY id ASC;";
+                    return conn.Query<RolesModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public RolesModel GetRoles(RolesModel model)
         {
-            var data = new RolesModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<RolesModel>("sp_Usm_rolesSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = @"
+                        SELECT id, 
+                               role_id, 
+                               role_desc, 
+                               created_by, 
+                               modified_by, 
+                               created AS ""createdDate"", 
+                               modified AS ""modifiedDate"",
+                               0 AS del_flag
+                        FROM bos_roles 
+                        WHERE id = @Id;";
+                    return conn.Query<RolesModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public RolesModel CreateRoles(RolesModel model)
         {
-            var data = new RolesModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@createdDate", DateTime.Now);
-                    param.Add("@role_id", model.role_id);
-                    param.Add("@role_desc", model.role_desc);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@del_flag", model.del_flag);
-                   
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL284", "T");
-
-
-                    data = conn.Query<RolesModel>("sp_Usm_rolesInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_roles 
+                        (role_id, role_desc, name, created, created_by)
+                        VALUES 
+                        (@role_id, @role_desc, @role_desc, CURRENT_TIMESTAMP, @created_by)
+                        RETURNING id, role_id, role_desc, created_by, modified_by, created AS ""createdDate"", modified AS ""modifiedDate"", 0 AS del_flag;";
+                    return conn.Query<RolesModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public RolesModel UpdateRoles(RolesModel model)
         {
-            var data = new RolesModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@modifiedDate", DateTime.Now);
-                    param.Add("@role_id", model.role_id);
-                    param.Add("@role_desc", model.role_desc);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@del_flag", model.del_flag);               
-                 
-                    param.Add("@TRIAL284", "T");
-
-
-                    data = conn.Query<RolesModel>("sp_Usm_rolesUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_roles SET 
+                            role_id = @role_id,
+                            role_desc = @role_desc,
+                            name = @role_desc,
+                            modified = CURRENT_TIMESTAMP,
+                            modified_by = @modified_by
+                        WHERE id = @id
+                        RETURNING id, role_id, role_desc, created_by, modified_by, created AS ""createdDate"", modified AS ""modifiedDate"", 0 AS del_flag;";
+                    return conn.Query<RolesModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteRoles(int id)
         {
-            var data = new RolesModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Usm_rolesDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "DELETE FROM bos_roles WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
     }
 }

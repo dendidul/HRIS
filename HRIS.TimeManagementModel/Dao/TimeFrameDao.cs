@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.TimeManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,16 +7,13 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.TimeManagement.Model.Dao
 {
     public class TimeFrameDao
     {
-
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
-
 
         public TimeFrameDao(IConfiguration config)
         {
@@ -24,161 +21,103 @@ namespace HRIS.TimeManagement.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
-
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<TimeFrameModel> GetAllTimeFrame()
         {
-            var data = new List<TimeFrameModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<TimeFrameModel>("sp_Tmn_time_framesSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_time_frames WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<TimeFrameModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimeFrameModel GetTimeFrame(TimeFrameModel model)
         {
-            var data = new TimeFrameModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<TimeFrameModel>("sp_Tmn_time_framesSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_time_frames WHERE id = @Id;";
+                    return conn.Query<TimeFrameModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimeFrameModel CreateTimeFrame(TimeFrameModel model)
         {
-            var data = new TimeFrameModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@time_frame_id", model.time_frame_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@starting_time", model.starting_time);
-                    param.Add("@tolerance_time", model.tolerance_time);
-                    param.Add("@duration_time", model.duration_time);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", DateTime.Now);                 
-                    param.Add("@del_flag", model.del_flag);
-
-
-                    data = conn.Query<TimeFrameModel>("sp_Tmn_time_framesInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_time_frames 
+                        (time_frame_id, short_desc, long_desc, starting_time, tolerance_time, duration_time, created_by, created_date, delete_flag)
+                        VALUES 
+                        (@time_frame_id, @short_desc, @long_desc, @starting_time, @tolerance_time, @duration_time, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<TimeFrameModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public TimeFrameModel UpdateTimeFrame(TimeFrameModel model)
         {
-            var data = new TimeFrameModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@time_frame_id", model.time_frame_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@starting_time", model.starting_time);
-                    param.Add("@tolerance_time", model.tolerance_time);
-                    param.Add("@duration_time", model.duration_time);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@del_flag", model.del_flag);
-                   
-
-
-                    data = conn.Query<TimeFrameModel>("sp_Tmn_time_framesUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_time_frames SET 
+                            time_frame_id = @time_frame_id,
+                            short_desc = @short_desc,
+                            long_desc = @long_desc,
+                            starting_time = @starting_time,
+                            tolerance_time = @tolerance_time,
+                            duration_time = @duration_time,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            delete_flag = COALESCE(@del_flag, delete_flag)
+                        WHERE id = @id
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<TimeFrameModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteTimeFrame(int id)
         {
-            var data = new TimeFrameModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Tmn_time_framesDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_time_frames SET delete_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
     }
 }

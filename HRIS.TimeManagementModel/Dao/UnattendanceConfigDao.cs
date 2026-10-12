@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.TimeManagement;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,15 +7,13 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.TimeManagement.Model.Dao
 {
-   public class UnattendanceConfigDao
+    public class UnattendanceConfigDao
     {
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
-
 
         public UnattendanceConfigDao(IConfiguration config)
         {
@@ -23,166 +21,105 @@ namespace HRIS.TimeManagement.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<UnattendanceModel> GetAllUnattendanceConfig()
         {
-            var data = new List<UnattendanceModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<UnattendanceModel>("sp_Tmn_unattendancesSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_unattendances WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<UnattendanceModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnattendanceModel GetUnattendanceConfig(UnattendanceModel model)
         {
-            var data = new UnattendanceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<UnattendanceModel>("sp_Tmn_unattendancesSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_unattendances WHERE id = @Id;";
+                    return conn.Query<UnattendanceModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnattendanceModel CreateUnattendanceConfig(UnattendanceModel model)
         {
-            var data = new UnattendanceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@un_attendance_period", model.un_attendance_period);
-                    param.Add("@un_attendance_unit", model.un_attendance_unit);
-                    param.Add("@un_attendance_quota", model.un_attendance_quota);
-                    param.Add("@amount_of_increment", model.amount_of_increment);
-                    param.Add("@increment_period", model.increment_period);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-                    data = conn.Query<UnattendanceModel>("sp_Tmn_unattendancesInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_unattendances 
+                        (unattendance_id, short_desc, long_desc, un_attendance_period, un_attendance_unit, un_attendance_quota, amount_of_increment, increment_period, created_by, created_date, delete_flag)
+                        VALUES 
+                        (@unattendance_id, @short_desc, @long_desc, @un_attendance_period, @un_attendance_unit, @un_attendance_quota, @amount_of_increment, @increment_period, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<UnattendanceModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnattendanceModel UpdateUnattendanceConfig(UnattendanceModel model)
         {
-            var data = new UnattendanceModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@un_attendance_period", model.increment_period);
-                    param.Add("@un_attendance_unit", model.un_attendance_unit);
-                    param.Add("@un_attendance_quota", model.un_attendance_quota);
-                    param.Add("@amount_of_increment", model.amount_of_increment);
-                    param.Add("@increment_period", model.increment_period);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-
-                    data = conn.Query<UnattendanceModel>("sp_Tmn_unattendancesUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_unattendances SET 
+                            unattendance_id = @unattendance_id,
+                            short_desc = @short_desc,
+                            long_desc = @long_desc,
+                            un_attendance_period = @un_attendance_period,
+                            un_attendance_unit = @un_attendance_unit,
+                            un_attendance_quota = @un_attendance_quota,
+                            amount_of_increment = @amount_of_increment,
+                            increment_period = @increment_period,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            delete_flag = COALESCE(@del_flag, delete_flag)
+                        WHERE id = @id
+                        RETURNING *, delete_flag AS del_flag;";
+                    return conn.Query<UnattendanceModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteUnattendanceConfig(int id)
         {
-            var data = new UnattendanceModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Tmn_unattendancesDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_unattendances SET delete_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
-
     }
 }

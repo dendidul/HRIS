@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.UserManagement;
 using HRIS.General.Model.ViewModel;
 using HRIS.General.Utility;
@@ -8,16 +8,13 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.UserManagement.Model.Dao
 {
-   public  class ManageRolesMenuDao
+    public class ManageRolesMenuDao
     {
-
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
-
 
         public ManageRolesMenuDao(IConfiguration config)
         {
@@ -25,123 +22,102 @@ namespace HRIS.UserManagement.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<RoleMenuViewModel> BuildRoleMenu(int roleid)
         {
-
             try
             {
-
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@RoleId", roleid);
-
-                    var data = conn.Query<RoleMenuViewModel>("SP_BuildRoleMenu", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-                    return data;
-
+                    const string sql = @"
+                        SELECT 
+                            mr.role_id AS ""RoleId"",
+                            m.id AS ""MenuId"",
+                            (CASE WHEN m.parent_id = 0 OR m.parent_id IS NULL THEN 1 ELSE 2 END) AS ""Level"",
+                            COALESCE(m.index, 0) AS ""Sequence"",
+                            COALESCE(m.parent_id, 0) AS ""ParentMenuId"",
+                            m.link AS ""Link"",
+                            m.menu_name AS ""MenuNm"",
+                            m.icon AS ""icon"",
+                            COALESCE(SUBSTRING(m.link FROM '^/([^/]+)'), m.link) AS ""ControllerName""
+                        FROM bos_manage_roles_menu mr
+                        JOIN bos_menu m ON mr.menu_id = m.id
+                        WHERE mr.role_id = @RoleId 
+                          AND (mr.del_flag = 0 OR mr.del_flag IS NULL)
+                          AND (m.del_flag = 0 OR m.del_flag IS NULL)
+                        ORDER BY m.index ASC;";
+                    return conn.Query<RoleMenuViewModel>(sql, new { RoleId = roleid }).ToList();
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
-
+                throw;
             }
-
         }
 
         public bool CheckMenuForFoles(int roleid, string ControllerName)
         {
-
             try
             {
-
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@RoleId", roleid);
-                    param.Add("@ControllerName", ControllerName);
-
-                    var data = conn.Query<RoleMenuViewModel>("SP_CheckMenuForFoles", param,
-                               commandType: CommandType.StoredProcedure).Any();
-
-                    return data;
-
+                    const string sql = @"
+                        SELECT 
+                            mr.role_id AS ""RoleId"",
+                            m.id AS ""MenuId"",
+                            m.link AS ""Link"",
+                            m.menu_name AS ""MenuNm""
+                        FROM bos_manage_roles_menu mr
+                        JOIN bos_menu m ON mr.menu_id = m.id
+                        WHERE mr.role_id = @RoleId 
+                          AND (mr.del_flag = 0 OR mr.del_flag IS NULL)
+                          AND (m.del_flag = 0 OR m.del_flag IS NULL)
+                          AND (m.link ILIKE '%' || @ControllerName || '%' OR @ControllerName IS NULL);";
+                    return conn.Query<RoleMenuViewModel>(sql, new { RoleId = roleid, ControllerName }).Any();
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
-
+                throw;
             }
-
         }
-
 
         public IList<ManageRolesMenuModel> GetAllRoleAccess()
         {
-            var data = new List<ManageRolesMenuModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<ManageRolesMenuModel>("sp_Usm_manage_roles_menuSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_manage_roles_menu WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<ManageRolesMenuModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
-
 
         public ManageRolesMenuModel CreateRoleAccessMenu(ManageRolesMenuModel model)
         {
-            var data = new ManageRolesMenuModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@role_id", model.role_id);
-                    param.Add("@menu_id", model.menu_id);
-                    param.Add("@del_flag", 0);
-
-
-                    data = conn.Query<ManageRolesMenuModel>("sp_Usm_manage_roles_menuInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    const string sql = @"
+                        INSERT INTO bos_manage_roles_menu 
+                        (role_id, menu_id, del_flag)
+                        VALUES 
+                        (@role_id, @menu_id, 0)
+                        RETURNING *;";
+                    return conn.Query<ManageRolesMenuModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteManageRoleAccessMenu(int id)
@@ -150,27 +126,14 @@ namespace HRIS.UserManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@id", id);
-
-
-
-                    conn.Query("sp_Usm_manage_roles_menuDelete", param,
-                                commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = "DELETE FROM bos_manage_roles_menu WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
         }
-
-
-
     }
 }

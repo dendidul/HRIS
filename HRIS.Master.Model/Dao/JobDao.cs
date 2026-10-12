@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.Master;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,16 +7,13 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.Master.Model.Dao
 {
-   public class JobDao
+    public class JobDao
     {
-
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
-
 
         public JobDao(IConfiguration config)
         {
@@ -24,161 +21,103 @@ namespace HRIS.Master.Model.Dao
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<JobModel> GetAllJob()
         {
-            var data = new List<JobModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<JobModel>("sp_Mst_jobsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_jobs WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<JobModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public JobModel GetJob(JobModel model)
         {
-            var data = new JobModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<JobModel>("sp_Mst_jobsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT * FROM bos_jobs WHERE id = @Id;";
+                    return conn.Query<JobModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public JobModel CreateJob(JobModel model)
         {
-            var data = new JobModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@job_id", model.job_id);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@TRIAL274", "T");
-
-
-                    data = conn.Query<JobModel>("sp_Mst_jobsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_jobs 
+                        (job_id, short_desc, long_desc, position_id, begin_date, end_date, created_by, created_date, del_flag)
+                        VALUES 
+                        (@job_id, @short_desc, @long_desc, @position_id, @begin_date, @end_date, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<JobModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public JobModel UpdateJob(JobModel model)
         {
-            var data = new JobModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@job_id", model.job_id);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("del_flag", model.del_flag);
-                    param.Add("@TRIAL274", "T");
-
-
-                    data = conn.Query<JobModel>("sp_Mst_jobsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_jobs SET 
+                            job_id = @job_id,
+                            short_desc = @short_desc,
+                            long_desc = @long_desc,
+                            position_id = @position_id,
+                            begin_date = @begin_date,
+                            end_date = @end_date,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<JobModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteJob(int id)
         {
-            var data = new JobModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Mst_jobsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_jobs SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
     }
 }

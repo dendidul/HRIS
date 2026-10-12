@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.PersonalAdmin;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.PersonalAdmin.Model.Dao
 {
@@ -16,164 +15,135 @@ namespace HRIS.PersonalAdmin.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public EmployeeLeaveQuotaDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<EmployeeQuotaModel> GetAllEmployeeQuota()
         {
-            var data = new List<EmployeeQuotaModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<EmployeeQuotaModel>("sp_Psa_employee_quotaSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = @"
+                        SELECT q.*, 
+                               q.begdt AS begin_date, 
+                               q.enddt AS end_date, 
+                               q.flag_delete AS del_flag,
+                               q.modby AS modified_by,
+                               q.moddt AS modified_date,
+                               p.person_code AS ""EmployeeId"",
+                               p.first_name AS ""EmployeeName"",
+                               u.unattendance_id AS ""UnattendanceCode""
+                        FROM bos_employee_quota q
+                        LEFT JOIN bos_people p ON q.status_employee_id = p.id
+                        LEFT JOIN bos_unattendances u ON q.unattendance_id = u.id
+                        WHERE q.flag_delete = 0 OR q.flag_delete IS NULL
+                        ORDER BY q.id ASC;";
+                    return conn.Query<EmployeeQuotaModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeQuotaModel GetEmployeeQuota(EmployeeQuotaModel model)
         {
-            var data = new EmployeeQuotaModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<EmployeeQuotaModel>("sp_Psa_employee_quotaSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = @"
+                        SELECT q.*, 
+                               q.begdt AS begin_date, 
+                               q.enddt AS end_date, 
+                               q.flag_delete AS del_flag,
+                               q.modby AS modified_by,
+                               q.moddt AS modified_date,
+                               p.person_code AS ""EmployeeId"",
+                               p.first_name AS ""EmployeeName"",
+                               u.unattendance_id AS ""UnattendanceCode""
+                        FROM bos_employee_quota q
+                        LEFT JOIN bos_people p ON q.status_employee_id = p.id
+                        LEFT JOIN bos_unattendances u ON q.unattendance_id = u.id
+                        WHERE q.id = @Id;";
+                    return conn.Query<EmployeeQuotaModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeQuotaModel CreateEmployeeQuota(EmployeeQuotaModel model)
         {
-            var data = new EmployeeQuotaModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@status_employee_id", model.status_employee_id);
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@quota", model.quota);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);                
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-                    data = conn.Query<EmployeeQuotaModel>("sp_Psa_employee_quotaInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_employee_quota 
+                        (status_employee_id, unattendance_id, quota, begdt, enddt, created_by, created_date, flag_delete)
+                        VALUES 
+                        (@status_employee_id, @unattendance_id, @quota, @begin_date, @end_date, @created_by, CURRENT_TIMESTAMP, COALESCE(@del_flag, 0))
+                        RETURNING *, begdt AS begin_date, enddt AS end_date, flag_delete AS del_flag;";
+                    return conn.Query<EmployeeQuotaModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public EmployeeQuotaModel UpdateEmployeeQuota(EmployeeQuotaModel model)
         {
-            var data = new EmployeeQuotaModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@status_employee_id", model.status_employee_id);
-                    param.Add("@unattendance_id", model.unattendance_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@quota", model.quota);               
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@del_flag", model.del_flag);
-
-
-
-                    data = conn.Query<EmployeeQuotaModel>("sp_Psa_employee_quotaUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_employee_quota SET 
+                            status_employee_id = @status_employee_id,
+                            unattendance_id = @unattendance_id,
+                            quota = @quota,
+                            begdt = @begin_date,
+                            enddt = @end_date,
+                            modby = @modified_by,
+                            moddt = CURRENT_TIMESTAMP,
+                            flag_delete = COALESCE(@del_flag, flag_delete)
+                        WHERE id = @id
+                        RETURNING *, begdt AS begin_date, enddt AS end_date, flag_delete AS del_flag;";
+                    return conn.Query<EmployeeQuotaModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteEmployeeQuota(int id)
         {
-            var data = new EmployeeQuotaModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Psa_employee_quotaDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_employee_quota SET flag_delete = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
     }
 }

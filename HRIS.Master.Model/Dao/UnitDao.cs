@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using HRIS.General.Model.Master;
 using HRIS.General.Utility;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 using System.Linq;
-using System.Text;
 
 namespace HRIS.Master.Model.Dao
 {
@@ -16,173 +15,111 @@ namespace HRIS.Master.Model.Dao
         private readonly Logger _Logger;
         private readonly IConfiguration _config;
 
-
         public UnitDao(IConfiguration config)
         {
             this._Logger = new Logger(config);
             this._config = config;
         }
 
-        public IDbConnection Connection
-        {
-            get
-            {
-                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
-            }
-        }
+        public IDbConnection Connection => new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
 
         public IList<UnitModel> GetAllUnit()
         {
-            var data = new List<UnitModel>();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", null);
-
-
-                    data = conn.Query<UnitModel>("sp_Mst_unitsSelect", param,
-                               commandType: CommandType.StoredProcedure).ToList();
-
-
-
+                    const string sql = "SELECT * FROM bos_units WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    return conn.Query<UnitModel>(sql).ToList();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnitModel GetUnit(UnitModel model)
         {
-            var data = new UnitModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@Id", model.id);
-
-
-                    data = conn.Query<UnitModel>("sp_Mst_unitsSelect", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-
-
+                    const string sql = "SELECT * FROM bos_units WHERE id = @Id;";
+                    return conn.Query<UnitModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnitModel CreateUnit(UnitModel model)
         {
-            var data = new UnitModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-
-                    param.Add("@unit_id", model.unit_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@created_by", model.created_by);
-                    param.Add("@created_date", model.created_date);
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@begin_date", DateTime.Now);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("@del_flag", model.del_flag);
-                    param.Add("@cost_center_id", model.cost_center_id);
-                    param.Add("@head_unit_id", model.head_unit_id);
-                    param.Add("@TRIAL291", "T");
-
-
-                    data = conn.Query<UnitModel>("sp_Mst_unitsInsert", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        INSERT INTO bos_units 
+                        (unit_id, short_desc, long_desc, created_by, created_date, position_id, begin_date, end_date, cost_center_id, head_unit_id, del_flag)
+                        VALUES 
+                        (@unit_id, @short_desc, @long_desc, @created_by, CURRENT_TIMESTAMP, @position_id, @begin_date, @end_date, @cost_center_id, @head_unit_id, COALESCE(@del_flag, 0))
+                        RETURNING *;";
+                    return conn.Query<UnitModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public UnitModel UpdateUnit(UnitModel model)
         {
-            var data = new UnitModel();
             try
             {
                 using (IDbConnection conn = Connection)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@id", model.id);
-                    param.Add("@unit_id", model.unit_id);
-                    param.Add("@short_desc", model.short_desc);
-                    param.Add("@long_desc", model.long_desc);
-                    param.Add("@modified_by", model.modified_by);
-                    param.Add("@modified_date", DateTime.Now);
-                    param.Add("@position_id", model.position_id);
-                    param.Add("@begin_date", model.begin_date);
-                    param.Add("@end_date", model.end_date);
-                    param.Add("del_flag", model.del_flag);
-                    param.Add("@cost_center_id", model.cost_center_id);
-                    param.Add("@head_unit_id", model.head_unit_id);
-                    param.Add("@TRIAL291", "T");
-
-
-                    data = conn.Query<UnitModel>("sp_Mst_unitsUpdate", param,
-                               commandType: CommandType.StoredProcedure).FirstOrDefault();
-
+                    const string sql = @"
+                        UPDATE bos_units SET 
+                            unit_id = @unit_id,
+                            short_desc = @short_desc,
+                            long_desc = @long_desc,
+                            modified_by = @modified_by,
+                            modified_date = CURRENT_TIMESTAMP,
+                            position_id = @position_id,
+                            begin_date = @begin_date,
+                            end_date = @end_date,
+                            cost_center_id = @cost_center_id,
+                            head_unit_id = @head_unit_id,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<UnitModel>(sql, model).FirstOrDefault();
                 }
-
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
-
+                throw;
             }
-            return data;
         }
 
         public void DeleteUnit(int id)
         {
-            var data = new UnitModel();
-            using (IDbConnection conn = Connection)
+            try
             {
-                var param = new DynamicParameters();
-                param.Add("@Id", id);
-
-
-
-                conn.Execute("sp_Mst_unitsDelete", param,
-                            commandType: CommandType.StoredProcedure);
-
-
-
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_units SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
             }
-
-
+            catch
+            {
+                throw;
+            }
         }
-
-
     }
 }
