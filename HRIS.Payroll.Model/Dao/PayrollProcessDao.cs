@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Payroll.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Payroll.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -124,7 +124,7 @@ namespace HRIS.Payroll.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_payroll_processes (payroll_process_id, short_desc, long_desc, payroll_periode_id, calculation_function, begin_date, end_date, working_period, on_cycle, employee_status, del_flag) 
                                     VALUES (@payroll_process_id, @short_desc, @long_desc, @payroll_periode_id, @calculation_function, @begin_date, @end_date, @working_period, @on_cycle, @employee_status, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }

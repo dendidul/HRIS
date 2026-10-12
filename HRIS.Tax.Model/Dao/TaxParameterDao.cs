@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Tax.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Tax.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -125,7 +125,7 @@ namespace HRIS.Tax.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_tax_parameters (tax_parameter_id, short_desc, long_desc, begin_date, end_date, max_position_tax, position_tax_percentage, tax_component_id, tax_allowance_id, created_by, created_date, flag_delete) 
                                     VALUES (@tax_parameter_id, @short_desc, @long_desc, @begin_date, @end_date, @max_position_tax, @position_tax_percentage, @tax_component_id, @tax_allowance_id, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -170,7 +170,7 @@ namespace HRIS.Tax.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_tax_parameters 
-                                    SET tax_parameter_id = @tax_parameter_id, short_desc = @short_desc, long_desc = @long_desc, begin_date = @begin_date, end_date = @end_date, max_position_tax = @max_position_tax, position_tax_percentage = @position_tax_percentage, tax_component_id = @tax_component_id, tax_allowance_id = @tax_allowance_id, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET tax_parameter_id = @tax_parameter_id, short_desc = @short_desc, long_desc = @long_desc, begin_date = @begin_date, end_date = @end_date, max_position_tax = @max_position_tax, position_tax_percentage = @position_tax_percentage, tax_component_id = @tax_component_id, tax_allowance_id = @tax_allowance_id, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

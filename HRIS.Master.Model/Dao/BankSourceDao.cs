@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Master.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Master.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -120,7 +120,7 @@ namespace HRIS.Master.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_bank_sources (bank_source_id, rec_number, bank_name, created_by, created_date, del_flag) 
                                     VALUES (@bank_source_id, @rec_number, @bank_name, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -159,7 +159,7 @@ namespace HRIS.Master.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_bank_sources 
-                                    SET bank_source_id = @bank_source_id, rec_number = @rec_number, bank_name = @bank_name, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET bank_source_id = @bank_source_id, rec_number = @rec_number, bank_name = @bank_name, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

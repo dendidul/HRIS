@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 
 using Dapper;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace HRIS.General.Utility
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Payroll.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Payroll.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -123,7 +123,7 @@ namespace HRIS.Payroll.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_proportionals (proportional_id, short_desc, long_desc, numerator_type, numerator_amount, denominator_type, denominator_amount, created_by, created_date, delete_flag) 
                                     VALUES (@proportional_id, @short_desc, @long_desc, @numerator_type, @numerator_amount, @denominator_type, @denominator_amount, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -166,7 +166,7 @@ namespace HRIS.Payroll.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_proportionals 
-                                    SET proportional_id = @proportional_id, short_desc = @short_desc, long_desc = @long_desc, numerator_type = @numerator_type, numerator_amount = @numerator_amount, denominator_type = @denominator_type, denominator_amount = @denominator_amount, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET proportional_id = @proportional_id, short_desc = @short_desc, long_desc = @long_desc, numerator_type = @numerator_type, numerator_amount = @numerator_amount, denominator_type = @denominator_type, denominator_amount = @denominator_amount, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

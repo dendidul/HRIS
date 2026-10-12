@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Tax.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Tax.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -118,7 +118,7 @@ namespace HRIS.Tax.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_tax_service_offices (tax_office_code, short_desc, long_desc, address_id, flag_delete) 
                                     VALUES (@tax_office_code, @short_desc, @long_desc, @address_id, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }

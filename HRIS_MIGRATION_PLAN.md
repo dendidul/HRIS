@@ -14,8 +14,8 @@
 | Architectural Aspect | Legacy Application (`Booster HR`) | Target Application (`HRIS`) |
 |---|---|---|
 | **Framework** | .NET Framework 4.5 / ASP.NET MVC 5 | ASP.NET Core MVC (.NET 10) |
-| **Data Access** | Entity Framework 6 (`hris_linovEntities`), Npgsql, raw SQL | Dapper (`IDbConnection`), ADO.NET, EF Core Identity |
-| **Database Engine** | PostgreSQL (`booster_hr`) | Microsoft SQL Server (`booster`) |
+| **Data Access** | Entity Framework 6 (`hris_linovEntities`), Npgsql, raw SQL | Dapper (`IDbConnection`), Npgsql, EF Core Identity with PostgreSQL |
+| **Database Engine** | PostgreSQL (`booster_hr`) | PostgreSQL (`booster_hr`) |
 | **UI Framework** | Bootstrap 3, GridMvc, jQuery EasyUI / ComboGrid | Sneat Responsive Bootstrap 5, Boxicons, DataTables |
 | **Authentication & Auth** | FormsAuthentication, Custom `MenuController` RBAC | ASP.NET Core Identity & CookieManager, `GlobalAccessMenuController` |
 | **Layering** | MVC (`HRLinov.App.Mvc`) -> Presenter/Logic (`HRLinov.App.Logic`) | `HRIS.Web` -> `HRIS.Service` -> `HRIS.*.Model` (DAOs) -> `HRIS.General` |

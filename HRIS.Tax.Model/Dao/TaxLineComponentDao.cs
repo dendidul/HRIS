@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Tax.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Tax.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -118,7 +118,7 @@ namespace HRIS.Tax.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_taxline_components (tax_line, payroll_component_id, created_by, created_date, flag_delete) 
                                     VALUES (@tax_line, @payroll_component_id, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -156,7 +156,7 @@ namespace HRIS.Tax.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_taxline_components 
-                                    SET tax_line = @tax_line, payroll_component_id = @payroll_component_id, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET tax_line = @tax_line, payroll_component_id = @payroll_component_id, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Payroll.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Payroll.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -125,7 +125,7 @@ namespace HRIS.Payroll.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_pay_onetime_trans (employee_id, payroll_component_id, payroll_process_id, number_period, fiscal_year, comp_trans_type, comp_amount, begin_date, end_date, created_by, created_date, del_flag) 
                                     VALUES (@employee_id, @payroll_component_id, @payroll_process_id, @number_period, @fiscal_year, @comp_trans_type, @comp_amount, @begin_date, @end_date, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -170,7 +170,7 @@ namespace HRIS.Payroll.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_pay_onetime_trans 
-                                    SET employee_id = @employee_id, payroll_component_id = @payroll_component_id, payroll_process_id = @payroll_process_id, number_period = @number_period, fiscal_year = @fiscal_year, comp_trans_type = @comp_trans_type, comp_amount = @comp_amount, begin_date = @begin_date, end_date = @end_date, modifed_by = @modifed_by, modifed_date = GETDATE()
+                                    SET employee_id = @employee_id, payroll_component_id = @payroll_component_id, payroll_process_id = @payroll_process_id, number_period = @number_period, fiscal_year = @fiscal_year, comp_trans_type = @comp_trans_type, comp_amount = @comp_amount, begin_date = @begin_date, end_date = @end_date, modifed_by = @modifed_by, modifed_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

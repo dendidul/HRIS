@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Payroll.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Payroll.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -124,7 +124,7 @@ namespace HRIS.Payroll.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_payroll_components (payroll_component_id, short_desc, long_desc, amount_type, amount, transaction_flag, begin_date, end_date, created_by, created_date, delete_flag) 
                                     VALUES (@payroll_component_id, @short_desc, @long_desc, @amount_type, @amount, @transaction_flag, @begin_date, @end_date, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -168,7 +168,7 @@ namespace HRIS.Payroll.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_payroll_components 
-                                    SET payroll_component_id = @payroll_component_id, short_desc = @short_desc, long_desc = @long_desc, amount_type = @amount_type, amount = @amount, transaction_flag = @transaction_flag, begin_date = @begin_date, end_date = @end_date, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET payroll_component_id = @payroll_component_id, short_desc = @short_desc, long_desc = @long_desc, amount_type = @amount_type, amount = @amount, transaction_flag = @transaction_flag, begin_date = @begin_date, end_date = @end_date, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

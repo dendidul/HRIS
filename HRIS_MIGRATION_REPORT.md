@@ -5,7 +5,7 @@
 This report documents the completed migration and implementation from the legacy HRIS system (**Booster HR**) to the new target web application (**HRIS**) targeting **.NET 10** with the **Sneat Bootstrap 5 Admin Template**.
 
 - **Source Codebase:** `D:\SourceCode\Booster HR` (C# ASP.NET MVC 5, .NET Framework 4.5, PostgreSQL `db25april2016sore.sql`).
-- **Target Codebase:** `D:\SourceCode\hris` (C# ASP.NET Core MVC on **.NET 10**, SQL Server `booster`).
+- **Target Codebase:** `D:\SourceCode\hris` (C# ASP.NET Core MVC on **.NET 10**, PostgreSQL `booster_hr`).
 - **Lead Developer & Primary Architect:** Erdendi Lesmana (`@dendidul`).
 
 ---

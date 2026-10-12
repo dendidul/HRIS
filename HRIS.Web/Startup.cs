@@ -80,7 +80,7 @@ namespace HRIS.Web
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<ApplicationDbContext>(options =>
-             options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+             options.UseNpgsql(Configuration.GetConnectionString("DbConnection")));
 
             services.AddDistributedMemoryCache();
 

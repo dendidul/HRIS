@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using Dapper;
 using HRIS.General.Model.Payroll;
@@ -338,7 +338,7 @@ namespace HRIS.Service.Manager
 
             try
             {
-                using (IDbConnection conn = new SqlConnection(_config.GetConnectionString("DbConnection")))
+                using (IDbConnection conn = new NpgsqlConnection(_config.GetConnectionString("DbConnection")))
                 {
                     // Fetch employees applicable
                     var sqlEmployees = @"SELECT id, people_id, employee_basic_wage FROM bos_employee_pay_attributes 

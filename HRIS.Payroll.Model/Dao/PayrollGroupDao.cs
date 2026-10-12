@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 
 namespace HRIS.Payroll.Model.Dao
@@ -25,7 +25,7 @@ namespace HRIS.Payroll.Model.Dao
         {
             get
             {
-                return new SqlConnection(_config.GetConnectionString("DbConnection"));
+                return new NpgsqlConnection(_config.GetConnectionString("DbConnection"));
             }
         }
 
@@ -121,7 +121,7 @@ namespace HRIS.Payroll.Model.Dao
                     {
                         var sql = @"INSERT INTO bos_payroll_groups (pgrid, sdesc, payroll_periode_id, begdt, enddt, created_by, created_date, delfl) 
                                     VALUES (@pgrid, @sdesc, @payroll_periode_id, @begdt, @enddt, @created_by, @created_date, 0);
-                                    SELECT SCOPE_IDENTITY();";
+                                    RETURNING id;";
                         conn.Execute(sql, model);
                         data = model;
                     }
@@ -162,7 +162,7 @@ namespace HRIS.Payroll.Model.Dao
                     using (IDbConnection conn = Connection)
                     {
                         var sql = @"UPDATE bos_payroll_groups 
-                                    SET pgrid = @pgrid, sdesc = @sdesc, payroll_periode_id = @payroll_periode_id, begdt = @begdt, enddt = @enddt, modified_by = @modified_by, modified_date = GETDATE()
+                                    SET pgrid = @pgrid, sdesc = @sdesc, payroll_periode_id = @payroll_periode_id, begdt = @begdt, enddt = @enddt, modified_by = @modified_by, modified_date = CURRENT_TIMESTAMP
                                     WHERE id = @id";
                         conn.Execute(sql, model);
                         data = model;

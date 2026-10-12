@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using Dapper;
 using HRIS.General.Model.Tax;
@@ -146,7 +146,7 @@ namespace HRIS.Service.Manager
         {
             try
             {
-                using (IDbConnection conn = new SqlConnection(_config.GetConnectionString("DbConnection")))
+                using (IDbConnection conn = new NpgsqlConnection(_config.GetConnectionString("DbConnection")))
                 {
                     // Fetch latest calculation results
                     var sqlEmployees = @"SELECT DISTINCT employee_id FROM bos_payroll_calc_results";
