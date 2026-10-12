@@ -1,0 +1,66 @@
+@model IEnumerable<HRIS.General.Model.Tax.TaxCalcModel>
+
+@{
+    ViewData["Title"] = "SPT Masa PPh 21";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var officers = ViewBag.Officers as IEnumerable<HRIS.General.Model.Tax.TaxServiceOfficeModel> ?? new List<HRIS.General.Model.Tax.TaxServiceOfficeModel>();
+    var employees = ViewBag.Employees as IEnumerable<HRIS.General.Model.PersonalAdmin.PeopleModel> ?? new List<HRIS.General.Model.PersonalAdmin.PeopleModel>();
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">SPT Masa PPh 21 & Tax Calculations</h5>
+        <a class="btn btn-primary" asp-action="Calculate">
+            <i class="bx bx-calculator me-1"></i> Run Tax Calculation
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Seq #</th>
+                        <th>Employee</th>
+                        <th>Year Period</th>
+                        <th>Gross Regular</th>
+                        <th>Position Cost</th>
+                        <th>PTKP</th>
+                        <th>PPh 21 Paid</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var emp = employees.FirstOrDefault(e => e.id == item.status_employee_id);
+                            <tr>
+                                <td><strong>#@item.sequence</strong></td>
+                                <td>@(emp != null ? $"{emp.nik} - {emp.first_name}" : $"ID #{item.status_employee_id}")</td>
+                                <td>@item.year_period</td>
+                                <td>@(item.regular_gross?.ToString("N0") ?? "0")</td>
+                                <td>@(item.position_cost?.ToString("N0") ?? "0")</td>
+                                <td>@(item.ptkp?.ToString("N0") ?? "0")</td>
+                                <td><span class="badge bg-label-danger">@(item.tax_paid?.ToString("N0") ?? "0")</span></td>
+                                <td class="text-center">
+                                    <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@item.id">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
+        });
+    </script>
+}

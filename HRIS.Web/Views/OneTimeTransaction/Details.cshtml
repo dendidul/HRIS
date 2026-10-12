@@ -1,0 +1,59 @@
+@model HRIS.General.Model.Payroll.PayOneTimeTransactionModel
+
+@{
+    ViewData["Title"] = "One Time Transaction Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">One Time Transaction Details</h5>
+        <small class="text-muted float-end">Payroll Management</small>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Employee ID</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.employee_id)</dd>
+
+            <dt class="col-sm-3">Component ID</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.payroll_component_id)</dd>
+
+            <dt class="col-sm-3">Process ID</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.payroll_process_id)</dd>
+
+            <dt class="col-sm-3">Transaction Type</dt>
+            <dd class="col-sm-9">
+                @if (Model.comp_trans_type == "PLUS")
+                {
+                    <span class="badge bg-label-success">PLUS (Allowance / Income)</span>
+                }
+                else
+                {
+                    <span class="badge bg-label-danger">MINUS (Deduction)</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Amount</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.comp_amount)</dd>
+
+            <dt class="col-sm-3">Fiscal Year</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.fiscal_year)</dd>
+
+            <dt class="col-sm-3">Period</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.number_period)</dd>
+
+            <dt class="col-sm-3">Begin Date</dt>
+            <dd class="col-sm-9">@(Model.begin_date?.ToString("dd MMM yyyy") ?? "-")</dd>
+
+            <dt class="col-sm-3">End Date</dt>
+            <dd class="col-sm-9">@(Model.end_date?.ToString("dd MMM yyyy") ?? "-")</dd>
+        </dl>
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="@Url.Action("Edit", "OneTimeTransaction", new { id = Model.id })" class="btn btn-primary">
+                <i class="bx bx-edit me-1"></i> Edit
+            </a>
+            <a href="@Url.Action("Index", "OneTimeTransaction")" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

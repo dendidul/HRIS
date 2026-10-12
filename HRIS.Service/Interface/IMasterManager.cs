@@ -88,8 +88,17 @@ namespace HRIS.Service.Interface
         EmployeeGroupModel UpdateEmployeeGroup(EmployeeGroupModel model);
         void DeleteEmployeeGroup(int id);
 
-
         // ===================||==================== 
+
+        // ================= BankSource =======================
+
+        IList<BankSourceModel> GetAllBankSource();
+        BankSourceModel GetBankSource(BankSourceModel model);
+        BankSourceModel CreateBankSource(BankSourceModel model);
+        BankSourceModel UpdateBankSource(BankSourceModel model);
+        void DeleteBankSource(int id);
+
+        // ===================||====================
 
 
 

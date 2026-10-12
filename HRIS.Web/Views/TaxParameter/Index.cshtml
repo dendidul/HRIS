@@ -1,0 +1,63 @@
+@model IEnumerable<HRIS.General.Model.Tax.TaxParameterModel>
+
+@{
+    ViewData["Title"] = "Tax Parameters";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">PPh 21 Tax Parameters</h5>
+        <a class="btn btn-primary" asp-action="Create">
+            <i class="bx bx-plus me-1"></i> Create New
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Parameter ID</th>
+                        <th>Description</th>
+                        <th>Max Position Tax</th>
+                        <th>Position Tax %</th>
+                        <th>Begin Date</th>
+                        <th>End Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.tax_parameter_id</strong></td>
+                                <td>@item.short_desc</td>
+                                <td>@(item.max_position_tax?.ToString("N0") ?? "0")</td>
+                                <td>@(item.position_tax_percentage ?? 0)%</td>
+                                <td>@(item.begin_date?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td>@(item.end_date?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td class="text-center">
+                                    <a class="btn btn-sm btn-outline-primary me-1" asp-action="Edit" asp-route-id="@item.id">Edit</a>
+                                    <a class="btn btn-sm btn-outline-info me-1" asp-action="Details" asp-route-id="@item.id">Details</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
+        });
+    </script>
+}

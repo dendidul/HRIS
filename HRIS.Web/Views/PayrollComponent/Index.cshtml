@@ -1,0 +1,74 @@
+@model IEnumerable<HRIS.General.Model.Payroll.PayComponentModel>
+
+@{
+    ViewData["Title"] = "Payroll Component";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Payroll Component</h5>
+        <a class="btn btn-primary" asp-action="Create">
+            <i class="bx bx-plus me-1"></i> Create New
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Component ID</th>
+                        <th>Short Description</th>
+                        <th>Amount Type</th>
+                        <th>Amount</th>
+                        <th>Trans Flag</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.payroll_component_id</strong></td>
+                                <td>@item.short_desc</td>
+                                <td>@item.amount_type</td>
+                                <td>@item.amount</td>
+                                <td>
+                                    @if (item.transaction_flag == "PLUS")
+                                    {
+                                        <span class="badge bg-label-success">Allowance (+)</span>
+                                    }
+                                    else if (item.transaction_flag == "MINUS")
+                                    {
+                                        <span class="badge bg-label-danger">Deduction (-)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-secondary">@item.transaction_flag</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a class="btn btn-sm btn-outline-primary me-1" asp-action="Edit" asp-route-id="@item.id">Edit</a>
+                                    <a class="btn btn-sm btn-outline-info me-1" asp-action="Details" asp-route-id="@item.id">Details</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
+        });
+    </script>
+}

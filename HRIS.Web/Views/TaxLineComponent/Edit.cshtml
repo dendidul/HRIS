@@ -1,0 +1,44 @@
+@model HRIS.General.Model.Tax.TaxLineComponent
+
+@{
+    ViewData["Title"] = "Edit Tax Line Component";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var components = ViewBag.Components as IEnumerable<HRIS.General.Model.Payroll.PayComponentModel> ?? new List<HRIS.General.Model.Payroll.PayComponentModel>();
+}
+
+@using (Html.BeginForm("Edit", "TaxLineComponent", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.id)
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Edit Tax Line Component</h5>
+            <small class="text-muted float-end">Tax Management</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="tax_line">Tax Line Number / Code</label>
+                    @Html.TextBoxFor(model => model.tax_line, new { Class = "form-control", id = "tax_line", required = "true" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="payroll_component_id">Payroll Component</label>
+                    <select name="payroll_component_id" class="form-select" required>
+                        <option value="">-- Select Payroll Component --</option>
+                        @foreach (var comp in components)
+                        {
+                            <option value="@comp.id" selected="@(Model.payroll_component_id == comp.id)">@comp.payroll_component_id - @comp.short_desc</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Update
+                </button>
+                <a href="@Url.Action("Index", "TaxLineComponent")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

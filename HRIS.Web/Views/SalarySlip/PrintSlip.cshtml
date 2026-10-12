@@ -1,0 +1,114 @@
+@{
+    Layout = null;
+    var calc = ViewBag.Calculation as HRIS.General.Model.Payroll.PayCalculationModel;
+    var results = ViewBag.Results as IEnumerable<HRIS.General.Model.Payroll.PayCalcResultModel> ?? new List<HRIS.General.Model.Payroll.PayCalcResultModel>();
+    var components = ViewBag.Components as IEnumerable<HRIS.General.Model.Payroll.PayComponentModel> ?? new List<HRIS.General.Model.Payroll.PayComponentModel>();
+    var employee = ViewBag.Employee as HRIS.General.Model.PersonalAdmin.PeopleModel;
+
+    decimal totalEarnings = results.Where(r => r.transaction_type == "PLUS").Sum(r => r.payroll_component_amount ?? 0);
+    decimal totalDeductions = results.Where(r => r.transaction_type == "MINUS").Sum(r => r.payroll_component_amount ?? 0);
+    decimal netSalary = totalEarnings - totalDeductions;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Slip Gaji - @(employee != null ? $"{employee.first_name} {employee.last_name}" : "")</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h2 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0; color: #666; }
+        .info-table { width: 100%; margin-bottom: 25px; }
+        .info-table td { padding: 4px 8px; font-size: 14px; }
+        .comp-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .comp-table th, .comp-table td { border: 1px solid #ddd; padding: 8px 12px; font-size: 14px; }
+        .comp-table th { background-color: #f7f7f7; text-align: left; }
+        .text-end { text-align: right; }
+        .total-box { border: 2px solid #206bc4; background-color: #f0f7ff; padding: 15px; text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
+        .signature-box { margin-top: 50px; display: flex; justify-content: space-between; }
+        .signature-col { text-align: center; width: 200px; }
+        .signature-space { height: 70px; }
+        @@media print {
+            .no-print { display: none; }
+            body { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 8px 16px; font-size: 14px; cursor: pointer; background: #206bc4; color: #fff; border: none; border-radius: 4px;">Print Document</button>
+    </div>
+
+    <div class="header">
+        <h2>SLIP GAJI KARYAWAN</h2>
+        <p>Periode: @(calc?.begin_date?.ToString("dd MMMM yyyy") ?? "-") s/d @(calc?.end_date?.ToString("dd MMMM yyyy") ?? "-")</p>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td width="15%"><strong>Nama Karyawan:</strong></td>
+            <td width="35%">@(employee != null ? $"{employee.first_name} {employee.last_name}" : "N/A")</td>
+            <td width="15%"><strong>Batch ID:</strong></td>
+            <td width="35%">#@(calc?.id ?? 0)</td>
+        </tr>
+        <tr>
+            <td><strong>NIK:</strong></td>
+            <td>@(employee?.nik ?? "N/A")</td>
+            <td><strong>Tahun Pajak:</strong></td>
+            <td>@(calc?.year_period?.ToString() ?? "-")</td>
+        </tr>
+    </table>
+
+    <table class="comp-table">
+        <thead>
+            <tr>
+                <th width="70%">Komponen Penghasilan & Potongan</th>
+                <th width="30%" class="text-end">Jumlah (IDR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2" style="background:#fcfcfc; font-weight:bold; color: #2e7d32;">Penerimaan (Earnings)</td>
+            </tr>
+            @foreach (var item in results.Where(r => r.transaction_type == "PLUS"))
+            {
+                var comp = components.FirstOrDefault(c => c.id == item.payroll_component_id);
+                <tr>
+                    <td style="padding-left: 25px;">@(comp?.short_desc ?? $"Komponen #{item.payroll_component_id}")</td>
+                    <td class="text-end">@(item.payroll_component_amount?.ToString("N0") ?? "0")</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2" style="background:#fcfcfc; font-weight:bold; color: #c62828;">Potongan (Deductions)</td>
+            </tr>
+            @foreach (var item in results.Where(r => r.transaction_type == "MINUS"))
+            {
+                var comp = components.FirstOrDefault(c => c.id == item.payroll_component_id);
+                <tr>
+                    <td style="padding-left: 25px;">@(comp?.short_desc ?? $"Komponen #{item.payroll_component_id}")</td>
+                    <td class="text-end">@(item.payroll_component_amount?.ToString("N0") ?? "0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        Gaji Bersih Diterima (Take Home Pay): IDR @netSalary.ToString("N0")
+    </div>
+
+    <div class="signature-box" style="margin-top: 60px; width: 100%; display: table;">
+        <div style="display: table-cell; text-align: center; width: 50%;">
+            Diterima Oleh,<br />
+            <div class="signature-space"></div>
+            <strong>@(employee != null ? $"{employee.first_name} {employee.last_name}" : "(....................)")</strong>
+        </div>
+        <div style="display: table-cell; text-align: center; width: 50%;">
+            Bagian Keuangan / HRD,<br />
+            <div class="signature-space"></div>
+            <strong>(....................................)</strong>
+        </div>
+    </div>
+</body>
+</html>

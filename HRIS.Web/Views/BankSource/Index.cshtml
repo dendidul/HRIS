@@ -1,0 +1,63 @@
+@model IEnumerable<HRIS.General.Model.Master.BankSourceModel>
+
+@{
+    ViewData["Title"] = "List Bank Source";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Master Bank Source</h5>
+        <a class="btn btn-primary" asp-action="Create">
+            <i class="bx bx-plus me-1"></i> Create New
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Bank Code</th>
+                        <th>Bank Name</th>
+                        <th>Account / Rec Number</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@Html.DisplayFor(modelItem => item.bank_source_id)</strong>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.bank_name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.rec_number)
+                                </td>
+                                <td class="text-center">
+                                    @Html.ActionLink("Edit", "Edit", "BankSource", new { id = item.id }, new { @class = "btn btn-sm btn-outline-primary me-1" })
+                                    @Html.ActionLink("Details", "Details", "BankSource", new { id = item.id }, new { @class = "btn btn-sm btn-outline-info me-1" })
+                                    @Html.ActionLink("Delete", "Delete", "BankSource", new { id = item.id }, new { @class = "btn btn-sm btn-outline-danger", onclick = "return confirm('Are you sure you want to delete this bank source?');" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
+        });
+    </script>
+}

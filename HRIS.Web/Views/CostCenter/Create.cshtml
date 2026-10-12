@@ -1,0 +1,47 @@
+@model HRIS.General.Model.Master.CostCenterModel
+
+@{
+    ViewData["Title"] = "Create Cost Center";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "CostCenter", FormMethod.Post, new { id = "formCreateCostCenter" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create Cost Center</h5>
+            <small class="text-muted float-end">Master Data</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="cost_center_code">Cost Center Code</label>
+                    @Html.TextBoxFor(model => model.cost_center_code, new { Class = "form-control", id = "cost_center_code", required = "true", placeholder = "Enter Cost Center Code" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="description">Description</label>
+                    @Html.TextBoxFor(model => model.description, new { Class = "form-control", id = "description", required = "true", placeholder = "Enter Description" })
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label" for="begin_date">Begin Date</label>
+                    @Html.TextBoxFor(model => model.begin_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "begin_date", type = "date" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="end_date">End Date</label>
+                    @Html.TextBoxFor(model => model.end_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "end_date", type = "date" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Save
+                </button>
+                <a href="@Url.Action("Index", "CostCenter")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

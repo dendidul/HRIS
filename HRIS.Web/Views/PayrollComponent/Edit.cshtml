@@ -1,0 +1,74 @@
+@model HRIS.General.Model.Payroll.PayComponentModel
+
+@{
+    ViewData["Title"] = "Edit Payroll Component";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "PayrollComponent", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.id)
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Edit Payroll Component</h5>
+            <small class="text-muted float-end">Payroll Management</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="payroll_component_id">Component Code</label>
+                    @Html.TextBoxFor(model => model.payroll_component_id, new { Class = "form-control", id = "payroll_component_id", required = "true" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="short_desc">Short Description</label>
+                    @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", id = "short_desc", required = "true" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="long_desc">Long Description</label>
+                    @Html.TextBoxFor(model => model.long_desc, new { Class = "form-control", id = "long_desc" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="amount_type">Amount Type</label>
+                    <select name="amount_type" class="form-select">
+                        <option value="Fixed" selected="@(Model.amount_type == "Fixed")">Fixed Amount</option>
+                        <option value="Formula" selected="@(Model.amount_type == "Formula")">Formula / Calculation</option>
+                        <option value="Variable" selected="@(Model.amount_type == "Variable")">Variable / Hourly</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="amount">Default Amount</label>
+                    @Html.TextBoxFor(model => model.amount, new { Class = "form-control", id = "amount" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="transaction_flag">Transaction Type</label>
+                    <select name="transaction_flag" class="form-select">
+                        <option value="PLUS" selected="@(Model.transaction_flag == "PLUS")">PLUS (Allowance / Income)</option>
+                        <option value="MINUS" selected="@(Model.transaction_flag == "MINUS")">MINUS (Deduction)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label" for="begin_date">Begin Date</label>
+                    @Html.TextBoxFor(model => model.begin_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "begin_date", type = "date" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="end_date">End Date</label>
+                    @Html.TextBoxFor(model => model.end_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "end_date", type = "date" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Update
+                </button>
+                <a href="@Url.Action("Index", "PayrollComponent")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

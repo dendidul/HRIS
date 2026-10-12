@@ -1,0 +1,40 @@
+@model HRIS.General.Model.Master.BankSourceModel
+
+@{
+    ViewData["Title"] = "Create Bank Source";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "BankSource", FormMethod.Post, new { id = "formCreateBankSource" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create Bank Source</h5>
+            <small class="text-muted float-end">Master Data</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="bank_source_id">Bank Code</label>
+                    @Html.TextBoxFor(model => model.bank_source_id, new { Class = "form-control", id = "bank_source_id", required = "true", placeholder = "e.g. BCA, MANDIRI" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="bank_name">Bank Name</label>
+                    @Html.TextBoxFor(model => model.bank_name, new { Class = "form-control", id = "bank_name", required = "true", placeholder = "Bank Name" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="rec_number">Account / Rec Number</label>
+                    @Html.TextBoxFor(model => model.rec_number, new { Class = "form-control", id = "rec_number", required = "true", placeholder = "Account Number" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Save
+                </button>
+                <a href="@Url.Action("Index", "BankSource")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

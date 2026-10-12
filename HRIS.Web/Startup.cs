@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace HRIS.Web
 {
@@ -133,29 +134,21 @@ namespace HRIS.Web
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
             //services.AddSwaggerDocument();
             services.Configure<FormOptions>(x =>
             {
-                //x.ValueLengthLimit = int.MaxValue;
-                //x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
-                //x.ValueCountLimit = 10; //default 1024
-                //x.ValueLengthLimit = int.MaxValue; //not recommended value
-                //x.MultipartBodyLengthLimit = long.MaxValue; //not recommended value
-
                 x.ValueLengthLimit = int.MaxValue;
                 x.MultipartBodyLengthLimit = int.MaxValue;
                 x.MemoryBufferThreshold = int.MaxValue;
-
             });
-            //services.AddMvc();
-            //services.AddProgressiveWebApp();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

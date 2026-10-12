@@ -1,0 +1,94 @@
+@model HRIS.General.Model.Payroll.PayOneTimeTransactionModel
+
+@{
+    ViewData["Title"] = "Create One Time Transaction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var components = ViewBag.Components as IEnumerable<HRIS.General.Model.Payroll.PayComponentModel> ?? new List<HRIS.General.Model.Payroll.PayComponentModel>();
+    var processes = ViewBag.Processes as IEnumerable<HRIS.General.Model.Payroll.PayProcModel> ?? new List<HRIS.General.Model.Payroll.PayProcModel>();
+    var employees = ViewBag.Employees as IEnumerable<HRIS.General.Model.PersonalAdmin.PeopleModel> ?? new List<HRIS.General.Model.PersonalAdmin.PeopleModel>();
+}
+
+@using (Html.BeginForm("Create", "OneTimeTransaction", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create One Time Transaction</h5>
+            <small class="text-muted float-end">Payroll Management</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="employee_id">Employee</label>
+                    <select name="employee_id" class="form-select" required>
+                        <option value="">-- Select Employee --</option>
+                        @foreach (var emp in employees)
+                        {
+                            <option value="@emp.id">@emp.nik - @emp.first_name @emp.last_name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="payroll_component_id">Payroll Component</label>
+                    <select name="payroll_component_id" class="form-select" required>
+                        <option value="">-- Select Component --</option>
+                        @foreach (var comp in components)
+                        {
+                            <option value="@comp.id">@comp.payroll_component_id - @comp.short_desc (@comp.transaction_flag)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="payroll_process_id">Payroll Process</label>
+                    <select name="payroll_process_id" class="form-select">
+                        <option value="">-- Select Process --</option>
+                        @foreach (var proc in processes)
+                        {
+                            <option value="@proc.id">@proc.payroll_process_id - @proc.short_desc</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="comp_trans_type">Transaction Type</label>
+                    <select name="comp_trans_type" class="form-select">
+                        <option value="PLUS">PLUS (Income)</option>
+                        <option value="MINUS">MINUS (Deduction)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="comp_amount">Amount</label>
+                    @Html.TextBoxFor(model => model.comp_amount, new { Class = "form-control", id = "comp_amount", required = "true", placeholder = "0.00" })
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="fiscal_year">Fiscal Year</label>
+                    @Html.TextBoxFor(model => model.fiscal_year, new { Class = "form-control", id = "fiscal_year", placeholder = DateTime.Now.Year.ToString() })
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="number_period">Period Number</label>
+                    @Html.TextBoxFor(model => model.number_period, new { Class = "form-control", id = "number_period", placeholder = "1" })
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label" for="begin_date">Begin Date</label>
+                    @Html.TextBoxFor(model => model.begin_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "begin_date", type = "date" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="end_date">End Date</label>
+                    @Html.TextBoxFor(model => model.end_date, "{0:yyyy-MM-dd}", new { Class = "form-control", id = "end_date", type = "date" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Save
+                </button>
+                <a href="@Url.Action("Index", "OneTimeTransaction")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

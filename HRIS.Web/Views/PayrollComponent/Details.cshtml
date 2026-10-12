@@ -1,0 +1,60 @@
+@model HRIS.General.Model.Payroll.PayComponentModel
+
+@{
+    ViewData["Title"] = "Payroll Component Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Payroll Component Details</h5>
+        <small class="text-muted float-end">Payroll Management</small>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Component Code</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.payroll_component_id)</dd>
+
+            <dt class="col-sm-3">Short Description</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.short_desc)</dd>
+
+            <dt class="col-sm-3">Long Description</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.long_desc)</dd>
+
+            <dt class="col-sm-3">Amount Type</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.amount_type)</dd>
+
+            <dt class="col-sm-3">Default Amount</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.amount)</dd>
+
+            <dt class="col-sm-3">Transaction Type</dt>
+            <dd class="col-sm-9">
+                @if (Model.transaction_flag == "PLUS")
+                {
+                    <span class="badge bg-label-success">Allowance (+)</span>
+                }
+                else if (Model.transaction_flag == "MINUS")
+                {
+                    <span class="badge bg-label-danger">Deduction (-)</span>
+                }
+                else
+                {
+                    @Model.transaction_flag
+                }
+            </dd>
+
+            <dt class="col-sm-3">Begin Date</dt>
+            <dd class="col-sm-9">@(Model.begin_date?.ToString("dd MMM yyyy") ?? "-")</dd>
+
+            <dt class="col-sm-3">End Date</dt>
+            <dd class="col-sm-9">@(Model.end_date?.ToString("dd MMM yyyy") ?? "-")</dd>
+        </dl>
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="@Url.Action("Edit", "PayrollComponent", new { id = Model.id })" class="btn btn-primary">
+                <i class="bx bx-edit me-1"></i> Edit
+            </a>
+            <a href="@Url.Action("Index", "PayrollComponent")" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

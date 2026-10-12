@@ -1,0 +1,107 @@
+@{
+    ViewData["Title"] = "Salary Slip Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var calc = ViewBag.Calculation as HRIS.General.Model.Payroll.PayCalculationModel;
+    var results = ViewBag.Results as IEnumerable<HRIS.General.Model.Payroll.PayCalcResultModel> ?? new List<HRIS.General.Model.Payroll.PayCalcResultModel>();
+    var components = ViewBag.Components as IEnumerable<HRIS.General.Model.Payroll.PayComponentModel> ?? new List<HRIS.General.Model.Payroll.PayComponentModel>();
+    var employee = ViewBag.Employee as HRIS.General.Model.PersonalAdmin.PeopleModel;
+
+    decimal totalEarnings = results.Where(r => r.transaction_type == "PLUS").Sum(r => r.payroll_component_amount ?? 0);
+    decimal totalDeductions = results.Where(r => r.transaction_type == "MINUS").Sum(r => r.payroll_component_amount ?? 0);
+    decimal netSalary = totalEarnings - totalDeductions;
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Salary Slip / Slip Gaji</h5>
+        <div>
+            <a href="@Url.Action("PrintSlip", "SalarySlip", new { calculationId = calc?.id, employeeId = employee?.id })" target="_blank" class="btn btn-outline-primary btn-sm me-2">
+                <i class="bx bx-printer me-1"></i> Print / PDF
+            </a>
+            <a href="@Url.Action("Index", "SalarySlip")" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row border-bottom pb-3 mb-3">
+            <div class="col-sm-6">
+                <h6 class="mb-1"><strong>Employee Info</strong></h6>
+                <p class="mb-0">Name: @(employee != null ? $"{employee.first_name} {employee.last_name}" : "N/A")</p>
+                <p class="mb-0">NIK: @(employee?.nik ?? "N/A")</p>
+                <p class="mb-0">Gender: @(employee?.gender ?? "N/A")</p>
+            </div>
+            <div class="col-sm-6 text-sm-end">
+                <h6 class="mb-1"><strong>Period Info</strong></h6>
+                <p class="mb-0">Period: @(calc?.begin_date?.ToString("dd MMM yyyy") ?? "-") to @(calc?.end_date?.ToString("dd MMM yyyy") ?? "-")</p>
+                <p class="mb-0">Batch ID: #@(calc?.id ?? 0)</p>
+                <p class="mb-0">Year: @(calc?.year_period?.ToString() ?? "-")</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Earnings -->
+            <div class="col-md-6 border-end">
+                <h6 class="text-success mb-3"><i class="bx bx-plus-circle me-1"></i> Earnings / Penerimaan</h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th class="text-end">Amount (IDR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in results.Where(r => r.transaction_type == "PLUS"))
+                        {
+                            var comp = components.FirstOrDefault(c => c.id == item.payroll_component_id);
+                            <tr>
+                                <td>@(comp?.short_desc ?? $"Component #{item.payroll_component_id}")</td>
+                                <td class="text-end">@(item.payroll_component_amount?.ToString("N0") ?? "0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td>Total Earnings</td>
+                            <td class="text-end text-success">@totalEarnings.ToString("N0")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Deductions -->
+            <div class="col-md-6">
+                <h6 class="text-danger mb-3"><i class="bx bx-minus-circle me-1"></i> Deductions / Potongan</h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th class="text-end">Amount (IDR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in results.Where(r => r.transaction_type == "MINUS"))
+                        {
+                            var comp = components.FirstOrDefault(c => c.id == item.payroll_component_id);
+                            <tr>
+                                <td>@(comp?.short_desc ?? $"Component #{item.payroll_component_id}")</td>
+                                <td class="text-end">@(item.payroll_component_amount?.ToString("N0") ?? "0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td>Total Deductions</td>
+                            <td class="text-end text-danger">@totalDeductions.ToString("N0")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="card bg-light border mt-4">
+            <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><strong>Take Home Pay (Net Salary):</strong></h5>
+                <h4 class="mb-0 text-primary"><strong>IDR @netSalary.ToString("N0")</strong></h4>
+            </div>
+        </div>
+    </div>
+</div>

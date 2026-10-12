@@ -1,0 +1,38 @@
+@model HRIS.General.Model.Master.BankSourceModel
+
+@{
+    ViewData["Title"] = "Bank Source Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Bank Source Details</h5>
+        <small class="text-muted float-end">Master Data</small>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Bank Code</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.bank_source_id)</dd>
+
+            <dt class="col-sm-3">Bank Name</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.bank_name)</dd>
+
+            <dt class="col-sm-3">Account Number</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.rec_number)</dd>
+
+            <dt class="col-sm-3">Created By</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.created_by)</dd>
+
+            <dt class="col-sm-3">Created Date</dt>
+            <dd class="col-sm-9">@(Model.created_date?.ToString("dd MMM yyyy HH:mm") ?? "-")</dd>
+        </dl>
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="@Url.Action("Edit", "BankSource", new { id = Model.id })" class="btn btn-primary">
+                <i class="bx bx-edit me-1"></i> Edit
+            </a>
+            <a href="@Url.Action("Index", "BankSource")" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

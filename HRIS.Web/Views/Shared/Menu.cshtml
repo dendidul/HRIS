@@ -12,7 +12,7 @@
         </a>
     </li>
 
-    @if (MenuLvl1 != null)
+    @if (MenuLvl1 != null && MenuLvl1.Any())
     {
         @foreach (var mp in MenuLvl1.Where(p => p.ParentMenuId == 0 && p.Level == 1).OrderBy(p => p.Sequence))
         {
@@ -47,5 +47,119 @@
                 }
             </li>
         }
+    }
+    else
+    {
+        <!-- Static / Fallback Complete Navigation Tree -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Master Data</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-cube-alt"></i>
+                <div>Master Data</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "Area")" class="menu-link"><div>Area</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "BankSource")" class="menu-link"><div>Bank Source</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "CostCenter")" class="menu-link"><div>Cost Center</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "EmployeeGroup")" class="menu-link"><div>Employee Group</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Job")" class="menu-link"><div>Job Title</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "LevelGrade")" class="menu-link"><div>Level & Grade</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "ObjectMaster")" class="menu-link"><div>Object Master</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Position")" class="menu-link"><div>Position</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Unit")" class="menu-link"><div>Unit / Department</div></a></li>
+            </ul>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Personnel</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div>Personal Admin</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "Employee")" class="menu-link"><div>Employee Master</div></a></li>
+            </ul>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Time Management</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-time-five"></i>
+                <div>Time Management</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "CompanyCalendar")" class="menu-link"><div>Company Calendar</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "WorkGroup")" class="menu-link"><div>Work Group</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "ScheduleVariant")" class="menu-link"><div>Schedule Variant</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "TimeFrame")" class="menu-link"><div>Time Frame</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "TimeCalculation")" class="menu-link"><div>Time Calculation</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Timesheet")" class="menu-link"><div>Timesheet</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "TimesheetRequest")" class="menu-link"><div>Timesheet Request</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "OvertimeRequest")" class="menu-link"><div>Overtime Request</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "OvertimeTimesheet")" class="menu-link"><div>Overtime Timesheet</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "EmployeeLeaveQuota")" class="menu-link"><div>Leave Quota</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "UnattendanceRequest")" class="menu-link"><div>Unattendance Request</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "AttendanceConfig")" class="menu-link"><div>Attendance Config</div></a></li>
+            </ul>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Payroll</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-wallet"></i>
+                <div>Payroll Management</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollArea")" class="menu-link"><div>Payroll Area</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollGroup")" class="menu-link"><div>Payroll Group</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollComponent")" class="menu-link"><div>Payroll Component</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollPeriod")" class="menu-link"><div>Payroll Period</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollProcess")" class="menu-link"><div>Payroll Process</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollRecurringComponent")" class="menu-link"><div>Recurring Component</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "OneTimeTransaction")" class="menu-link"><div>One-Time Transaction</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Proportional")" class="menu-link"><div>Proportional Rules</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "PayrollCalculation")" class="menu-link"><div>Payroll Calculation Batch</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "SalarySlip")" class="menu-link"><div>Salary Slips / Slip Gaji</div></a></li>
+            </ul>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Taxation</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div>Tax Management</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "TaxParameter")" class="menu-link"><div>Tax Parameter</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "TaxOfficer")" class="menu-link"><div>Tax Office (KPP)</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "TaxLineComponent")" class="menu-link"><div>Tax Line Component</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "SPTMasa")" class="menu-link"><div>SPT Masa PPh 21</div></a></li>
+            </ul>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">System</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-shield"></i>
+                <div>User Management</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item"><a href="@Url.Action("Index", "Users")" class="menu-link"><div>Users</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "Role")" class="menu-link"><div>Roles</div></a></li>
+                <li class="menu-item"><a href="@Url.Action("Index", "AccessModule")" class="menu-link"><div>Access Module</div></a></li>
+            </ul>
+        </li>
     }
 </ul>

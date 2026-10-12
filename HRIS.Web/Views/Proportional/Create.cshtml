@@ -1,0 +1,67 @@
+@model HRIS.General.Model.Payroll.PayProportionalModel
+
+@{
+    ViewData["Title"] = "Create Proportional Rule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "Proportional", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create Proportional Rule</h5>
+            <small class="text-muted float-end">Payroll Management</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="proportional_id">Rule Code</label>
+                    @Html.TextBoxFor(model => model.proportional_id, new { Class = "form-control", id = "proportional_id", required = "true", placeholder = "e.g. PROP01" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="short_desc">Short Description</label>
+                    @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", id = "short_desc", required = "true" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="long_desc">Long Description</label>
+                    @Html.TextBoxFor(model => model.long_desc, new { Class = "form-control", id = "long_desc" })
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label class="form-label" for="numerator_type">Numerator Type</label>
+                    <select name="numerator_type" class="form-select">
+                        <option value="WorkingDays">Working Days</option>
+                        <option value="CalendarDays">Calendar Days</option>
+                        <option value="Fixed">Fixed Amount</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="numerator_amount">Numerator Amount</label>
+                    @Html.TextBoxFor(model => model.numerator_amount, new { Class = "form-control", id = "numerator_amount", placeholder = "0" })
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="denominator_type">Denominator Type</label>
+                    <select name="denominator_type" class="form-select">
+                        <option value="WorkingDays">Working Days</option>
+                        <option value="CalendarDays">Calendar Days</option>
+                        <option value="Fixed">Fixed Amount</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="denominator_amount">Denominator Amount</label>
+                    @Html.TextBoxFor(model => model.denominator_amount, new { Class = "form-control", id = "denominator_amount", placeholder = "0" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Save
+                </button>
+                <a href="@Url.Action("Index", "Proportional")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

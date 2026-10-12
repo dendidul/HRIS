@@ -1,0 +1,41 @@
+@model HRIS.General.Model.Tax.TaxServiceOfficeModel
+
+@{
+    ViewData["Title"] = "Edit Tax Office";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "TaxOfficer", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.id)
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Edit Tax Service Office (KPP)</h5>
+            <small class="text-muted float-end">Tax Management</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="tax_office_code">Office Code</label>
+                    @Html.TextBoxFor(model => model.tax_office_code, new { Class = "form-control", id = "tax_office_code", required = "true" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="short_desc">Short Description</label>
+                    @Html.TextBoxFor(model => model.short_desc, new { Class = "form-control", id = "short_desc", required = "true" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="long_desc">Long Description</label>
+                    @Html.TextBoxFor(model => model.long_desc, new { Class = "form-control", id = "long_desc" })
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save me-1"></i> Update
+                </button>
+                <a href="@Url.Action("Index", "TaxOfficer")" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+}

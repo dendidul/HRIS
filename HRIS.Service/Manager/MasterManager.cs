@@ -22,6 +22,7 @@ namespace HRIS.Service.Manager
         private readonly PositionDao PositionDao;
         private readonly UnitDao UnitDao;
         private readonly EmployeeGroupDao EmployeeGroupDao;
+        private readonly BankSourceDao BankSourceDao;
 
 
         public MasterManager(IConfiguration _config)
@@ -36,9 +37,7 @@ namespace HRIS.Service.Manager
             this.PositionDao = new PositionDao(_config);
             this.UnitDao = new UnitDao(_config);
             this.EmployeeGroupDao = new EmployeeGroupDao(_config);
-
-
-
+            this.BankSourceDao = new BankSourceDao(_config);
         }
 
         public string DestinationLogFolder()
@@ -749,6 +748,76 @@ namespace HRIS.Service.Manager
             {
                 _logger.WriteFunctionLog(DestinationLogFolder(), "", "DeleteEmployeeGroup", ex.Message, "Service");
 
+            }
+        }
+
+        // ================= BankSource =======================
+
+        public IList<BankSourceModel> GetAllBankSource()
+        {
+            var data = new List<BankSourceModel>();
+            try
+            {
+                data = (List<BankSourceModel>)BankSourceDao.GetAllBankSource();
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetAllBankSource", ex.Message, "Service");
+            }
+            return data;
+        }
+
+        public BankSourceModel GetBankSource(BankSourceModel model)
+        {
+            var data = new BankSourceModel();
+            try
+            {
+                data = BankSourceDao.GetBankSource(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetBankSource", ex.Message, "Service");
+            }
+            return data;
+        }
+
+        public BankSourceModel CreateBankSource(BankSourceModel model)
+        {
+            var data = new BankSourceModel();
+            try
+            {
+                data = BankSourceDao.CreateBankSource(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "CreateBankSource", ex.Message, "Service");
+            }
+            return data;
+        }
+
+        public BankSourceModel UpdateBankSource(BankSourceModel model)
+        {
+            var data = new BankSourceModel();
+            try
+            {
+                data = BankSourceDao.UpdateBankSource(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "UpdateBankSource", ex.Message, "Service");
+            }
+            return data;
+        }
+
+        public void DeleteBankSource(int id)
+        {
+            try
+            {
+                BankSourceDao.DeleteBankSource(new BankSourceModel { id = id });
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "DeleteBankSource", ex.Message, "Service");
             }
         }
     }

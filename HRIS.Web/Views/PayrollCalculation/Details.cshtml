@@ -1,0 +1,72 @@
+@model HRIS.General.Model.Payroll.PayCalculationModel
+
+@{
+    ViewData["Title"] = "Payroll Calculation Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var results = ViewBag.Results as IEnumerable<HRIS.General.Model.Payroll.PayCalcResultModel> ?? new List<HRIS.General.Model.Payroll.PayCalcResultModel>();
+    var components = ViewBag.Components as IEnumerable<HRIS.General.Model.Payroll.PayComponentModel> ?? new List<HRIS.General.Model.Payroll.PayComponentModel>();
+    var employees = ViewBag.Employees as IEnumerable<HRIS.General.Model.PersonalAdmin.PeopleModel> ?? new List<HRIS.General.Model.PersonalAdmin.PeopleModel>();
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Payroll Batch #@Model.id Details</h5>
+        <span class="badge @(Model.running_status == "Closed" ? "bg-label-success" : "bg-label-warning")">@Model.running_status</span>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-3"><strong>Year Period:</strong> @Model.year_period</div>
+            <div class="col-md-3"><strong>Area ID:</strong> @Model.payroll_area_id</div>
+            <div class="col-md-3"><strong>Processed Employees:</strong> @(Model.processed_employee ?? 0)</div>
+            <div class="col-md-3"><strong>Execution Time:</strong> @(Model.total_time ?? 0)s</div>
+        </div>
+
+        <h6 class="mb-3">Calculation Results Breakdown</h6>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Component ID</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (results.Any())
+                    {
+                        @foreach (var res in results)
+                        {
+                            <tr>
+                                <td>@res.employee_id</td>
+                                <td>@res.payroll_component_id</td>
+                                <td>
+                                    @if (res.transaction_type == "PLUS")
+                                    {
+                                        <span class="badge bg-label-success">PLUS</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-danger">MINUS</span>
+                                    }
+                                </td>
+                                <td>@(res.payroll_component_amount?.ToString("N2") ?? "0.00")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No results recorded yet for this batch.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="@Url.Action("Index", "PayrollCalculation")" class="btn btn-outline-secondary">Back to List</a>
+            <a href="@Url.Action("Index", "SalarySlip")" class="btn btn-outline-primary">Go to Salary Slips</a>
+        </div>
+    </div>
+</div>
