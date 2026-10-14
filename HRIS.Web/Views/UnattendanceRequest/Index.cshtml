@@ -76,10 +76,9 @@
                         </td>
 
                         <td>
-                            @Html.ActionLink("Edit", "Edit", "LeaveRequest", new { id = item.id }, new { @class = "btn btn-success m-b-5" })
-                            @Html.ActionLink("Details", "Details", "LeaveRequest", new { id = item.id }, new { @class = "btn btn-warning m-b-5" })
-                            @Html.ActionLink("Delete", "Delete", new { id = item.id }, new { @class = "btn btn-danger m-b-5" })
-
+                            @Html.ActionLink("Edit", "Edit", "UnattendanceRequest", new { id = item.id }, new { @class = "btn btn-success m-b-5" })
+                            @Html.ActionLink("Details", "Details", "UnattendanceRequest", new { id = item.id }, new { @class = "btn btn-warning m-b-5" })
+                            @Html.ActionLink("Delete", "Delete", "UnattendanceRequest", new { id = item.id }, new { @class = "btn btn-danger m-b-5" })
                         </td>
                     </tr>
                 }

@@ -1,0 +1,38 @@
+@model HRIS.General.Model.UserManagement.MenuModel
+
+@{
+    ViewData["Title"] = "Delete Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title text-danger mb-0">Delete Menu Confirmation</h4>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            Are you sure you want to delete menu <strong>@Model.menu_name</strong>?
+        </div>
+        <dl class="row">
+            <dt class="col-sm-3">Menu ID</dt>
+            <dd class="col-sm-9">#@Model.id</dd>
+
+            <dt class="col-sm-3">Menu Name</dt>
+            <dd class="col-sm-9">@Model.menu_name</dd>
+
+            <dt class="col-sm-3">Link</dt>
+            <dd class="col-sm-9"><code>@Model.link</code></dd>
+
+            <dt class="col-sm-3">Controller</dt>
+            <dd class="col-sm-9">@(Model.controller_name ?? "-")</dd>
+        </dl>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="id" />
+            <button type="submit" class="btn btn-danger me-2">Confirm Delete</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

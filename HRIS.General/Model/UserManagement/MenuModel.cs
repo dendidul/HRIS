@@ -18,6 +18,8 @@ namespace HRIS.General.Model.UserManagement
 
         public int? index { get; set; }
 
+        public string controller_name { get; set; }
+
         public short? del_flag { get; set; }
 
         public string TRIAL278 { get; set; }

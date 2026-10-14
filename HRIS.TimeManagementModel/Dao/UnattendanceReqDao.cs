@@ -32,11 +32,12 @@ namespace HRIS.TimeManagement.Model.Dao
                     const string sql = @"
                         SELECT u.*, 
                                u.flag_delete AS del_flag,
-                               p.person_code AS NIK,
-                               p.first_name AS EmployeeName,
+                               COALESCE(epa.nik, p.person_code) AS NIK,
+                               (p.first_name || ' ' || COALESCE(p.middle_name, '') || ' ' || COALESCE(p.last_name, '')) AS EmployeeName,
                                att.unattendance_id AS UnattendanceCode
                         FROM bos_unattendance_reqs u
-                        LEFT JOIN bos_people p ON u.employee_id = p.id
+                        LEFT JOIN bos_employee_pay_attributes epa ON u.employee_id = epa.id
+                        LEFT JOIN bos_people p ON (epa.people_id = p.id OR u.employee_id = p.id)
                         LEFT JOIN bos_unattendances att ON u.unattendance_id = att.id
                         WHERE u.flag_delete = 0 OR u.flag_delete IS NULL
                         ORDER BY u.id ASC;";

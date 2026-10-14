@@ -32,10 +32,11 @@ namespace HRIS.TimeManagement.Model.Dao
                     const string sql = @"
                         SELECT t.*, 
                                t.flag_delete AS del_flag,
-                               p.person_code AS NIK,
-                               p.first_name AS EmployeeName
+                               COALESCE(epa.nik, p.person_code) AS NIK,
+                               (p.first_name || ' ' || COALESCE(p.middle_name, '') || ' ' || COALESCE(p.last_name, '')) AS EmployeeName
                         FROM bos_timesheet_reqs t
-                        LEFT JOIN bos_people p ON t.employee_id = p.id
+                        LEFT JOIN bos_employee_pay_attributes epa ON t.employee_id = epa.id
+                        LEFT JOIN bos_people p ON (epa.people_id = p.id OR t.employee_id = p.id)
                         WHERE t.flag_delete = 0 OR t.flag_delete IS NULL
                         ORDER BY t.id ASC;";
                     return conn.Query<TimesheetReqModel>(sql).ToList();

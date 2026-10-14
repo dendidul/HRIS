@@ -33,12 +33,15 @@ namespace HRIS.TimeManagement.Model.Dao
                         SELECT o.*, 
                                o.created AS created_date,
                                o.modified AS modified_date,
-                               p.person_code AS NIK,
-                               p.first_name AS EmployeeName,
-                               u.unit_id AS UnitCode
+                               COALESCE(epa.nik, p.person_code) AS NIK,
+                               (p.first_name || ' ' || COALESCE(p.middle_name, '') || ' ' || COALESCE(p.last_name, '')) AS EmployeeName,
+                               u.short_desc AS UnitCode
                         FROM bos_overtime_requests o
-                        LEFT JOIN bos_people p ON o.employee_id = p.id
+                        LEFT JOIN bos_overtime_request_details od ON o.id = od.overtime_request_id
+                        LEFT JOIN bos_employee_pay_attributes epa ON (od.status_employee_id = epa.id OR o.employee_id = epa.id)
+                        LEFT JOIN bos_people p ON (epa.people_id = p.id OR o.employee_id = p.id)
                         LEFT JOIN bos_units u ON o.unit_id = u.id
+                        WHERE o.del_flag = 0 OR o.del_flag IS NULL
                         ORDER BY o.id ASC;";
                     return conn.Query<OvertimeRequestModel>(sql).ToList();
                 }

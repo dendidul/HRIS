@@ -1,0 +1,58 @@
+@model HRIS.General.Model.UserManagement.MenuModel
+
+@{
+    ViewData["Title"] = "Create Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Create Menu</h4>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="menu_name" class="form-label">Menu Name</label>
+                    <input asp-for="menu_name" class="form-control" required placeholder="e.g. Employee" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="link" class="form-label">Link / Route</label>
+                    <input asp-for="link" class="form-control" placeholder="../../Employee/Index/" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="controller_name" class="form-label">Controller Name</label>
+                    <input asp-for="controller_name" class="form-control" placeholder="e.g. Employee" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="parent_id" class="form-label">Parent Menu</label>
+                    <select asp-for="parent_id" class="form-select">
+                        <option value="0">-- Top Level Header (0) --</option>
+                        @if (ViewBag.ParentMenus != null)
+                        {
+                            foreach (var pm in (IEnumerable<HRIS.General.Model.UserManagement.MenuModel>)ViewBag.ParentMenus)
+                            {
+                                <option value="@pm.id">@pm.menu_name (@pm.id)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="index" class="form-label">Sequence Index</label>
+                    <input asp-for="index" type="number" class="form-control" placeholder="1" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="icon" class="form-label">Icon Class (Boxicons)</label>
+                    <input asp-for="icon" class="form-control" placeholder="bx bx-cube" />
+                </div>
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary me-2">Create Menu</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

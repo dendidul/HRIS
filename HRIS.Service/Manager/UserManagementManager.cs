@@ -241,6 +241,30 @@ namespace HRIS.Service.Manager
             return data;
         }
 
+        public MenuModel GetMenu(int id)
+        {
+            try { return MenuDao.GetMenu(id); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetMenu", ex.Message, "Service"); return null; }
+        }
+
+        public MenuModel CreateMenu(MenuModel model)
+        {
+            try { return MenuDao.CreateMenu(model); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "CreateMenu", ex.Message, "Service"); return null; }
+        }
+
+        public MenuModel UpdateMenu(MenuModel model)
+        {
+            try { return MenuDao.UpdateMenu(model); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "UpdateMenu", ex.Message, "Service"); return null; }
+        }
+
+        public void DeleteMenu(int id)
+        {
+            try { MenuDao.DeleteMenu(id); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "DeleteMenu", ex.Message, "Service"); }
+        }
+
         public IList<UserModel> GetAllUsers()
         {
             IList<UserModel> data = new List<UserModel>();

@@ -38,5 +38,84 @@ namespace HRIS.UserManagement.Model.Dao
                 throw;
             }
         }
+
+        public MenuModel GetMenu(int id)
+        {
+            try
+            {
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "SELECT * FROM bos_menu WHERE id = @Id;";
+                    return conn.Query<MenuModel>(sql, new { Id = id }).FirstOrDefault();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public MenuModel CreateMenu(MenuModel model)
+        {
+            try
+            {
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = @"
+                        INSERT INTO bos_menu 
+                        (menu_name, link, icon, parent_id, index, controller_name, del_flag)
+                        VALUES 
+                        (@menu_name, @link, @icon, @parent_id, @index, @controller_name, 0)
+                        RETURNING *;";
+                    return conn.Query<MenuModel>(sql, model).FirstOrDefault();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public MenuModel UpdateMenu(MenuModel model)
+        {
+            try
+            {
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = @"
+                        UPDATE bos_menu SET 
+                            menu_name = @menu_name,
+                            link = @link,
+                            icon = @icon,
+                            parent_id = @parent_id,
+                            index = @index,
+                            controller_name = @controller_name,
+                            del_flag = COALESCE(@del_flag, del_flag)
+                        WHERE id = @id
+                        RETURNING *;";
+                    return conn.Query<MenuModel>(sql, model).FirstOrDefault();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void DeleteMenu(int id)
+        {
+            try
+            {
+                using (IDbConnection conn = Connection)
+                {
+                    const string sql = "UPDATE bos_menu SET del_flag = 1 WHERE id = @Id;";
+                    conn.Execute(sql, new { Id = id });
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

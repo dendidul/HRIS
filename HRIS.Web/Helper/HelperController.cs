@@ -34,6 +34,9 @@ namespace HRIS.Web.Helper
                 listItems.Add("Account");
                 listItems.Add("Error");
                 listItems.Add("Home");
+                listItems.Add("Menu");
+                listItems.Add("AccessModule");
+                listItems.Add("Role");
                 return listItems;
             }
         }

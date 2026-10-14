@@ -36,11 +36,12 @@ namespace HRIS.PersonalAdmin.Model.Dao
                                q.flag_delete AS del_flag,
                                q.modby AS modified_by,
                                q.moddt AS modified_date,
-                               p.person_code AS ""EmployeeId"",
-                               p.first_name AS ""EmployeeName"",
-                               u.unattendance_id AS ""UnattendanceCode""
+                               COALESCE(epa.nik, p.person_code) AS ""EmployeeId"",
+                               (p.first_name || ' ' || COALESCE(p.middle_name, '') || ' ' || COALESCE(p.last_name, '')) AS ""EmployeeName"",
+                               u.short_desc AS ""UnattendanceCode""
                         FROM bos_employee_quota q
-                        LEFT JOIN bos_people p ON q.status_employee_id = p.id
+                        LEFT JOIN bos_employee_pay_attributes epa ON q.status_employee_id = epa.id
+                        LEFT JOIN bos_people p ON (epa.people_id = p.id OR q.status_employee_id = p.id)
                         LEFT JOIN bos_unattendances u ON q.unattendance_id = u.id
                         WHERE q.flag_delete = 0 OR q.flag_delete IS NULL
                         ORDER BY q.id ASC;";

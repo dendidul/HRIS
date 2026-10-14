@@ -23,6 +23,10 @@ namespace HRIS.Service.Interface
         void DeleteRoles(int id);
 
         IList<MenuModel> GetAllMenu();
+        MenuModel GetMenu(int id);
+        MenuModel CreateMenu(MenuModel model);
+        MenuModel UpdateMenu(MenuModel model);
+        void DeleteMenu(int id);
 
         IList<UserModel> GetAllUsers();
         UserModel GetUsers(UserModel model);
