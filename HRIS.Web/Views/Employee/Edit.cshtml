@@ -1,0 +1,231 @@
+@model HRIS.General.Model.PersonalAdmin.EmployeeAttributeViewModel
+
+@{
+    ViewData["Title"] = "Edit Employee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            @Html.HiddenFor(model => model.People.id)
+            @Html.HiddenFor(model => model.People.person_code)
+            @Html.HiddenFor(model => model.People.created_by)
+            @Html.HiddenFor(model => model.People.created_date)
+            @Html.HiddenFor(model => model.EmployeeAttributes.id)
+            @Html.HiddenFor(model => model.EmployeeAttributes.people_id)
+            @Html.HiddenFor(model => model.EmpTime.id)
+            @Html.HiddenFor(model => model.EmpTax.id)
+
+            <div class="nav-align-top mb-4">
+                <ul class="nav nav-pills mb-3" role="tablist">
+                    <li class="nav-item">
+                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-personal">
+                            <i class="bx bx-user me-1"></i> Personal Data
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-position">
+                            <i class="bx bx-briefcase me-1"></i> Position & Org
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-payroll">
+                            <i class="bx bx-dollar-circle me-1"></i> Payroll
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-time-tax">
+                            <i class="bx bx-time me-1"></i> Time & Tax
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Tab 1: Personal Data -->
+                    <div class="tab-pane fade show active" id="navs-personal" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">NIK / Employee Code <span class="text-danger">*</span></label>
+                                <input asp-for="EmployeeAttributes.nik" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input asp-for="People.first_name" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Middle Name</label>
+                                <input asp-for="People.middle_name" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Last Name</label>
+                                <input asp-for="People.last_name" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select asp-for="People.gender" asp-items="ViewBag.GenderList" class="form-select"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Religion</label>
+                                <select asp-for="People.religion" asp-items="ViewBag.ReligionList" class="form-select"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Birth Place</label>
+                                <input asp-for="People.birth_place" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Birth Date</label>
+                                <input asp-for="People.birth_date" type="date" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Marital Status</label>
+                                <select asp-for="People.marital_status_id" asp-items="ViewBag.MaritalStatusList" class="form-select"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Education / Institution</label>
+                                <input asp-for="People.institution" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Major</label>
+                                <input asp-for="People.majority" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Degree</label>
+                                <input asp-for="People.education" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Position & Organization -->
+                    <div class="tab-pane fade" id="navs-position" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Unit / Department</label>
+                                <select asp-for="EmployeeAttributes.unit_id" asp-items="ViewBag.UnitList" class="form-select">
+                                    <option value="">-- Select Unit --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Position</label>
+                                <select asp-for="EmployeeAttributes.position_id" asp-items="ViewBag.PositionList" class="form-select">
+                                    <option value="">-- Select Position --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Job</label>
+                                <select asp-for="EmployeeAttributes.job_id" asp-items="ViewBag.JobList" class="form-select">
+                                    <option value="">-- Select Job --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Level / Grade</label>
+                                <select asp-for="EmployeeAttributes.level_grade_id" asp-items="ViewBag.LevelGradeList" class="form-select">
+                                    <option value="">-- Select Level Grade --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Employee Status</label>
+                                <select asp-for="EmployeeAttributes.status_employee" asp-items="ViewBag.StatusEmployeeList" class="form-select"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input asp-for="EmployeeAttributes.email" type="email" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Hire Date <span class="text-danger">*</span></label>
+                                <input asp-for="EmployeeAttributes.hire_date" type="date" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">End Contract</label>
+                                <input asp-for="EmployeeAttributes.end_contract" type="date" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Terminate Date</label>
+                                <input asp-for="EmployeeAttributes.terminate_date" type="date" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Payroll -->
+                    <div class="tab-pane fade" id="navs-payroll" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Payroll Group</label>
+                                <select asp-for="EmployeeAttributes.payroll_group_id" asp-items="ViewBag.PayrollGroupList" class="form-select">
+                                    <option value="">-- Select Payroll Group --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Cost Center</label>
+                                <select asp-for="EmployeeAttributes.cost_center_id" asp-items="ViewBag.CostCenterList" class="form-select">
+                                    <option value="">-- Select Cost Center --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Bank Source</label>
+                                <select asp-for="EmployeeAttributes.bank_source_id" asp-items="ViewBag.BankSourceList" class="form-select">
+                                    <option value="">-- Select Bank Source --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Basic Wage (Gaji Pokok)</label>
+                                <input asp-for="EmployeeAttributes.employee_basic_wage" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Currency</label>
+                                <input asp-for="EmployeeAttributes.employee_currency" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Time & Tax -->
+                    <div class="tab-pane fade" id="navs-time-tax" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Workgroup / Shift</label>
+                                <select asp-for="EmpTime.workgroup_id" asp-items="ViewBag.WorkgroupList" class="form-select">
+                                    <option value="">-- Select Workgroup --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Shift Starting Date</label>
+                                <input asp-for="EmpTime.starting_date" type="date" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fingerprint ID / Machine ID</label>
+                                <input asp-for="EmpTime.finger_id" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tax Status (PTKP)</label>
+                                <select asp-for="EmpTax.tax_type" class="form-select">
+                                    <option value="TK0">TK/0</option>
+                                    <option value="K0">K/0</option>
+                                    <option value="K1">K/1</option>
+                                    <option value="K2">K/2</option>
+                                    <option value="K3">K/3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">KPP / Tax Service Office</label>
+                                <select asp-for="EmpTax.tax_service_office_id" asp-items="ViewBag.TaxOfficerList" class="form-select">
+                                    <option value="">-- Select Tax Office --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between mt-3 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bx bx-arrow-back me-1"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save me-1"></i> Update Employee
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

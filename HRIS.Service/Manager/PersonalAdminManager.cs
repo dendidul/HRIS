@@ -54,6 +54,36 @@ namespace HRIS.Service.Manager
             return data;
         }
 
+        public PeopleModel GetPeople(int id)
+        {
+            return PeopleDao.GetPeople(id);
+        }
+
+        public EmployeeAttributeViewModel GetEmployeeDetail(int peopleId)
+        {
+            return PeopleDao.GetEmployeeDetail(peopleId);
+        }
+
+        public int CreateEmployee(EmployeeAttributeViewModel vm)
+        {
+            return PeopleDao.CreateEmployee(vm);
+        }
+
+        public void UpdateEmployee(EmployeeAttributeViewModel vm)
+        {
+            PeopleDao.UpdateEmployee(vm);
+        }
+
+        public void TerminateEmployee(int peopleId, DateTime terminateDate)
+        {
+            PeopleDao.TerminateEmployee(peopleId, terminateDate);
+        }
+
+        public void DeleteEmployee(int peopleId)
+        {
+            PeopleDao.DeleteEmployee(peopleId);
+        }
+
 
         public IList<EmployeeQuotaModel> GetAllEmployeeQuota()
         {
