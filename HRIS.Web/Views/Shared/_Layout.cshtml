@@ -43,8 +43,8 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="~/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
     <link rel="stylesheet" href="~/sneat/vendor/libs/apex-charts/apex-charts.css" />
-    <link rel="stylesheet" href="~/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css" />
-    <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/DataTables/media/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap4.min.css" />
     <link rel="stylesheet" href="~/assets/plugins/gritter/css/jquery.gritter.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
@@ -98,6 +98,110 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 50px;
+        }
+
+        /* Sneat Bootstrap 5 DataTables styling bridge */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1rem;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid #d9dee3;
+            border-radius: 0.375rem;
+            padding: 0.35rem 1.8rem 0.35rem 0.75rem;
+            margin: 0 0.5rem;
+            color: #697a8d;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #d9dee3;
+            border-radius: 0.375rem;
+            padding: 0.35rem 0.75rem;
+            margin-left: 0.5rem;
+            color: #697a8d;
+        }
+        .dataTables_wrapper .dataTables_info {
+            padding-top: 0.85rem;
+            color: #a1acb8;
+            font-size: 0.85rem;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 0.75rem;
+            text-align: right;
+        }
+        .dataTables_wrapper .dataTables_paginate ul.pagination {
+            display: inline-flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 0.375rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item {
+            margin: 0 2px;
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item .page-link {
+            border-radius: 0.375rem !important;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.85rem;
+            color: #697a8d;
+            background-color: #f5f5f9;
+            border: 1px solid #d9dee3;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item:hover:not(.disabled):not(.active) .page-link {
+            background-color: #e1e4e8;
+            color: #566a7f;
+            border-color: #d9dee3;
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+            background-color: #696cff !important;
+            border-color: #696cff !important;
+            color: #fff !important;
+            box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item.disabled .page-link {
+            color: #c7cdd4 !important;
+            background-color: #fcfdfd !important;
+            border-color: #e9ecef !important;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        /* Fallback if rendered as plain paginate_button without Bootstrap ul.pagination */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            display: inline-block;
+            box-sizing: border-box;
+            min-width: 1.8em;
+            padding: 0.45rem 0.85rem;
+            margin: 0 2px;
+            text-align: center;
+            text-decoration: none !important;
+            cursor: pointer;
+            color: #697a8d !important;
+            border: 1px solid #d9dee3 !important;
+            border-radius: 0.375rem !important;
+            background: #f5f5f9 !important;
+            font-size: 0.85rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #e1e4e8 !important;
+            color: #566a7f !important;
+            border-color: #d9dee3 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            color: #fff !important;
+            border: 1px solid #696cff !important;
+            background: #696cff !important;
+            box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+            color: #c7cdd4 !important;
+            border-color: #e9ecef !important;
+            background: #fcfdfd !important;
+            cursor: not-allowed !important;
         }
     </style>
 </head>
@@ -236,8 +340,9 @@
     <!-- Vendors JS -->
     <script src="~/sneat/vendor/libs/apex-charts/apexcharts.js"></script>
     <script src="~/assets/plugins/DataTables/media/js/jquery.dataTables.js"></script>
-    <script src="~/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/assets/plugins/DataTables/media/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Responsive/js/responsive.bootstrap4.min.js"></script>
     <script src="~/assets/plugins/gritter/js/jquery.gritter.js"></script>
     <script src="~/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
     <script src="~/assets/plugins/bootstrap-daterangepicker/moment.js"></script>
@@ -253,12 +358,45 @@
         var App = {
             init: function () { }
         };
+
+        // Automatic fallback initialization for data-table-responsive across all views
+        $(document).ready(function () {
+            if ($('#data-table-responsive').length !== 0 && !$.fn.DataTable.isDataTable('#data-table-responsive')) {
+                $('#data-table-responsive').DataTable({
+                    responsive: true,
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                    language: {
+                        search: "_INPUT_",
+                        searchPlaceholder: "Search records...",
+                        paginate: {
+                            previous: '<i class="bx bx-chevron-left"></i>',
+                            next: '<i class="bx bx-chevron-right"></i>',
+                            first: '<i class="bx bx-chevrons-left"></i>',
+                            last: '<i class="bx bx-chevrons-right"></i>'
+                        }
+                    }
+                });
+            }
+        });
         var TableManageResponsive = {
             init: function () {
                 if ($.fn.DataTable && $('#data-table-responsive').length > 0) {
                     if (!$.fn.DataTable.isDataTable('#data-table-responsive')) {
                         $('#data-table-responsive').DataTable({
-                            responsive: true
+                            responsive: true,
+                            pageLength: 10,
+                            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                            language: {
+                                search: "_INPUT_",
+                                searchPlaceholder: "Search records...",
+                                paginate: {
+                                    previous: '<i class="bx bx-chevron-left"></i>',
+                                    next: '<i class="bx bx-chevron-right"></i>',
+                                    first: '<i class="bx bx-chevrons-left"></i>',
+                                    last: '<i class="bx bx-chevrons-right"></i>'
+                                }
+                            }
                         });
                     }
                 }
