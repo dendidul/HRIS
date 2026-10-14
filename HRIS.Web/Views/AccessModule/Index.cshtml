@@ -27,7 +27,7 @@
 
 
 
-                    <th></th>
+                    <th class="text-center" style="width: 140px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,13 +45,12 @@
                         </td>
                       
                         <td>
-                            @Html.ActionLink("Config", "Config", "AccessModule", new { id = item.id }, new { @class = "btn btn-success m-b-5" })
+                            @Html.ActionLink("Config", "Config", "AccessModule", new { id = item.id }, new { @class = "btn btn-sm btn-outline-primary me-1" })
                          
                         </td>
                     </tr>
                 }
             }
-                }
             </tbody>
         </table>
     </div>

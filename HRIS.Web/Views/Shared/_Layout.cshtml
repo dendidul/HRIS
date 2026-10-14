@@ -366,6 +366,9 @@
                     responsive: true,
                     pageLength: 10,
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                    columnDefs: [
+                        { orderable: false, targets: -1 } // Disable sorting on the last column (Actions)
+                    ],
                     language: {
                         search: "_INPUT_",
                         searchPlaceholder: "Search records...",
@@ -387,6 +390,9 @@
                             responsive: true,
                             pageLength: 10,
                             lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                            columnDefs: [
+                                { orderable: false, targets: -1 } // Disable sorting on the last column (Actions)
+                            ],
                             language: {
                                 search: "_INPUT_",
                                 searchPlaceholder: "Search records...",
