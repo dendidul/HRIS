@@ -1,0 +1,76 @@
+@model HRIS.General.Model.ViewModel.PayrollCalculationDetailViewModel
+
+@{
+    ViewBag.Title = "Payroll Calculation Matrix Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Payroll Component Matrix</h5>
+        <a href="@Url.Action("Index", "PayrollCalculationDetail")" class="btn btn-sm btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Back to Batches
+        </a>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th>NIK</th>
+                    <th>Employee Name</th>
+                    <th>Unit</th>
+                    @if (Model.PayrollComponent != null)
+                    {
+                        foreach (var comp in Model.PayrollComponent)
+                        {
+                            <th>@comp.ComponentName</th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PayrollCalculationDetailHeader != null && Model.PayrollCalculationDetailHeader.Any())
+                {
+                    foreach (var emp in Model.PayrollCalculationDetailHeader)
+                    {
+                        <tr>
+                            <td><strong>@emp.NIK</strong></td>
+                            <td>@emp.FullName</td>
+                            <td>@(emp.Unit ?? "-")</td>
+                            @if (Model.PayrollComponent != null)
+                            {
+                                foreach (var comp in Model.PayrollComponent)
+                                {
+                                    var amt = emp.PayrollCalculationDetailContain?.FirstOrDefault(c => c.PayrollComponentId == comp.ComponentId)?.PayrollComponentAmount ?? 0;
+                                    <td class="text-end">@amt.ToString("N2")</td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="text-center py-4 text-muted">No detail records found for this batch.</td>
+                    </tr>
+                }
+            </tbody>
+            @if (Model.payrollComponentTotal != null && Model.payrollComponentTotal.Any())
+            {
+                <tfoot>
+                    <tr class="table-secondary fw-bold">
+                        <td colspan="3" class="text-center">TOTAL</td>
+                        @if (Model.PayrollComponent != null)
+                        {
+                            foreach (var comp in Model.PayrollComponent)
+                            {
+                                var tot = Model.payrollComponentTotal.FirstOrDefault(t => t.ComponentId == comp.ComponentId)?.ComponentTotalAmount ?? 0;
+                                <td class="text-end">@tot.ToString("N2")</td>
+                            }
+                        }
+                    </tr>
+                </tfoot>
+            }
+        </table>
+    </div>
+</div>

@@ -44,5 +44,8 @@ namespace HRIS.General.Model.Payroll
 
         public string TRIAL281 { get; set; }
 
+        public string payroll_area_desc { get; set; }
+
+        public string payroll_process_desc { get; set; }
     }
 }

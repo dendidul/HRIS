@@ -1,0 +1,63 @@
+@model IEnumerable<HRIS.General.Model.Payroll.PayCalculationModel>
+
+@{
+    ViewBag.Title = "Payroll Calculation Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Payroll Calculation Detail</h5>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Batch ID</th>
+                    <th>Year Period</th>
+                    <th>Payroll Area</th>
+                    <th>Process</th>
+                    <th>Period Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>#@item.id</strong></td>
+                            <td>@item.year_period</td>
+                            <td>@item.payroll_area_desc</td>
+                            <td>@item.payroll_process_desc</td>
+                            <td>@(item.begin_date?.ToString("dd/MM/yyyy") ?? "-") - @(item.end_date?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>
+                                @if (item.running_status == "Closed")
+                                {
+                                    <span class="badge bg-label-success">Closed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-label-warning">@item.running_status</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("ViewDetail", "PayrollCalculationDetail", new { id = item.id })" class="btn btn-sm btn-outline-primary">
+                                    <i class="bx bx-show-alt me-1"></i> View Detail
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No payroll calculation data available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

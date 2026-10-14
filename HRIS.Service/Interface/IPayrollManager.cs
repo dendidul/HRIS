@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using HRIS.General.Model.Payroll;
+using HRIS.General.Model.ViewModel;
 
 namespace HRIS.Service.Interface
 {
@@ -70,6 +71,10 @@ namespace HRIS.Service.Interface
         PayCalculationModel UpdatePayrollCalculation(PayCalculationModel model);
         void DeletePayrollCalculation(int id);
         IList<PayCalcResultModel> GetCalculationResults(int calculationId);
+        IList<PayCalculationModel> GetAllPayrollCalculationDetail();
+        PayrollCalculationDetailViewModel GetPayrollCalculationDetailViewModel(int calculationId);
+        IList<ReportJamsostekPerubahanUpahViewModel> GetReportJPU(int areaId, int processId, int seqNumber, string year);
+        IList<ReportJamsostek2aViewModel> GetReportJamsostek2a(int areaId, int processId, string year, int seqNumber);
         void ProcessPayrollCalculation(int calculationId, int payrollAreaId, int payrollProcessId, DateTime beginDate, DateTime endDate);
     }
 }

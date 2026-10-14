@@ -1,0 +1,107 @@
+@model IEnumerable<HRIS.General.Model.ViewModel.ReportJamsostek2aViewModel>
+
+@{
+    ViewBag.Title = "Report Jamsostek Form 2A";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Form Jamsostek 2A</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Jamsostek">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Payroll Area</label>
+                    <select name="area_id" class="form-select">
+                        <option value="0">-- All Area --</option>
+                        @if (ViewBag.Areas != null)
+                        {
+                            foreach (var a in ViewBag.Areas)
+                            {
+                                <option value="@a.id" selected="@(ViewBag.SelectedArea == a.id)">@a.short_desc</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Payroll Process</label>
+                    <select name="process_id" class="form-select">
+                        <option value="0">-- All Process --</option>
+                        @if (ViewBag.Processes != null)
+                        {
+                            foreach (var p in ViewBag.Processes)
+                            {
+                                <option value="@p.id" selected="@(ViewBag.SelectedProcess == p.id)">@p.short_desc</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Year Period</label>
+                    <input type="text" name="year" class="form-control" placeholder="2026" value="@ViewBag.SelectedYear" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Seq Number</label>
+                    <input type="number" name="seq_number" class="form-control" placeholder="1" value="@ViewBag.SelectedSeq" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bx bx-search me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Daftar Rincian Iuran Jamsostek 2A</h5>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th>No KPJ</th>
+                    <th>NIK</th>
+                    <th>Nama Tenaga Kerja</th>
+                    <th>Tgl Lahir</th>
+                    <th class="text-end">Upah Pokok</th>
+                    <th class="text-end">JKK</th>
+                    <th class="text-end">JKM</th>
+                    <th class="text-end">JHT TK</th>
+                    <th class="text-end">JHT Perusahaan</th>
+                    <th class="text-end">Total Iuran</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.no_kpj</td>
+                            <td><strong>@item.nik</strong></td>
+                            <td>@item.name</td>
+                            <td class="text-center">@item.birth_date</td>
+                            <td class="text-end">@item.data_upah.ToString("N2")</td>
+                            <td class="text-end">@item.jkk.ToString("N2")</td>
+                            <td class="text-end">@item.jkm.ToString("N2")</td>
+                            <td class="text-end">@item.jht_tk.ToString("N2")</td>
+                            <td class="text-end">@item.jht_per.ToString("N2")</td>
+                            <td class="text-end fw-bold text-primary">@item.total_iuran.ToString("N2")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="text-center py-4 text-muted">Belum ada data form 2A untuk filter terpilih.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

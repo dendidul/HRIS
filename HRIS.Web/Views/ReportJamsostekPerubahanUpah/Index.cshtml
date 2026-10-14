@@ -1,0 +1,105 @@
+@model IEnumerable<HRIS.General.Model.ViewModel.ReportJamsostekPerubahanUpahViewModel>
+
+@{
+    ViewBag.Title = "Report Jamsostek JPU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Report Jamsostek Perubahan Upah (JPU)</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Payroll Area</label>
+                    <select name="area_id" class="form-select">
+                        <option value="0">-- All Area --</option>
+                        @if (ViewBag.Areas != null)
+                        {
+                            foreach (var a in ViewBag.Areas)
+                            {
+                                <option value="@a.id" selected="@(ViewBag.SelectedArea == a.id)">@a.short_desc</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Payroll Process</label>
+                    <select name="process_id" class="form-select">
+                        <option value="0">-- All Process --</option>
+                        @if (ViewBag.Processes != null)
+                        {
+                            foreach (var p in ViewBag.Processes)
+                            {
+                                <option value="@p.id" selected="@(ViewBag.SelectedProcess == p.id)">@p.short_desc</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Year Period</label>
+                    <input type="text" name="year" class="form-control" placeholder="2026" value="@ViewBag.SelectedYear" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Seq Number</label>
+                    <input type="number" name="seq_number" class="form-control" placeholder="1" value="@ViewBag.SelectedSeq" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bx bx-search me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Data Jamsostek Perubahan Upah</h5>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIK</th>
+                    <th>No Peserta</th>
+                    <th>Nama Karyawan</th>
+                    <th>Tgl Lahir</th>
+                    <th>L/P</th>
+                    <th class="text-end">Upah Bulan Ini</th>
+                    <th class="text-end">Upah Kemarin</th>
+                    <th class="text-end">Selisih</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.rn</td>
+                            <td><strong>@item.nomor_induk_karyawan</strong></td>
+                            <td>@item.nomor_peserta</td>
+                            <td>@item.nama</td>
+                            <td>@item.tanggal_lahir</td>
+                            <td>@item.jenis_kelamin</td>
+                            <td class="text-end">@item.gaji_bulan_ini.ToString("N2")</td>
+                            <td class="text-end">@item.gaji_bulan_kemarin.ToString("N2")</td>
+                            <td class="text-end fw-bold">@item.selisih_gaji.ToString("N2")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center py-4 text-muted">Belum ada data report untuk filter terpilih.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

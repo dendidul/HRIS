@@ -3,6 +3,25 @@
     List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl2 = ViewBag.Menu;
 }
 
+@functions {
+    string ResolveMenuUrl(string rawUrl)
+    {
+        if (string.IsNullOrWhiteSpace(rawUrl) || rawUrl == "#")
+            return "javascript:void(0);";
+        
+        var clean = rawUrl.Trim();
+        if (clean.StartsWith("../../"))
+        {
+            clean = clean.Substring(5); // leaves "/Controller/Action/..."
+        }
+        else if (!clean.StartsWith("/"))
+        {
+            clean = "/" + clean;
+        }
+        return clean;
+    }
+}
+
 <ul class="menu-inner py-1">
     <!-- Dashboard Link -->
     <li class="menu-item" id="menu-dashboard">
@@ -26,7 +45,7 @@
             }
 
             <li class="menu-item">
-                <a href="@(hasChild ? "javascript:void(0);" : (string.IsNullOrEmpty(mp.Link) ? "javascript:void(0);" : mp.Link))" 
+                <a href="@(hasChild ? "javascript:void(0);" : ResolveMenuUrl(mp.Link))" 
                    class="menu-link @(hasChild ? "menu-toggle" : "")">
                     <i class="menu-icon tf-icons @iconClass"></i>
                     <div>@mp.MenuNm</div>
@@ -38,7 +57,7 @@
                         @foreach (var child in children)
                         {
                             <li class="menu-item">
-                                <a href="@child.Link" class="menu-link">
+                                <a href="@ResolveMenuUrl(child.Link)" class="menu-link">
                                     <div>@child.MenuNm</div>
                                 </a>
                             </li>

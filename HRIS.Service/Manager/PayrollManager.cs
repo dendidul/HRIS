@@ -5,6 +5,7 @@ using Npgsql;
 using System.Linq;
 using Dapper;
 using HRIS.General.Model.Payroll;
+using HRIS.General.Model.ViewModel;
 using HRIS.General.Utility;
 using HRIS.Payroll.Model.Dao;
 using HRIS.Service.Interface;
@@ -25,6 +26,7 @@ namespace HRIS.Service.Manager
         private readonly OneTimeTransactionDao _oneTimeTransactionDao;
         private readonly ProportionalDao _proportionalDao;
         private readonly PayrollCalculationDao _payrollCalculationDao;
+        private readonly PayrollCalculationDetailDao _payrollCalculationDetailDao;
 
         public PayrollManager(IConfiguration config)
         {
@@ -39,6 +41,7 @@ namespace HRIS.Service.Manager
             this._oneTimeTransactionDao = new OneTimeTransactionDao(config);
             this._proportionalDao = new ProportionalDao(config);
             this._payrollCalculationDao = new PayrollCalculationDao(config);
+            this._payrollCalculationDetailDao = new PayrollCalculationDetailDao(config);
         }
 
         public string DestinationLogFolder()
@@ -329,6 +332,46 @@ namespace HRIS.Service.Manager
         {
             try { return _payrollCalculationDao.GetCalculationResults(calculationId); }
             catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetCalculationResults", ex.Message, "Service"); return new List<PayCalcResultModel>(); }
+        }
+
+        public IList<PayCalculationModel> GetAllPayrollCalculationDetail()
+        {
+            try { return _payrollCalculationDetailDao.ReadAll(); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetAllPayrollCalculationDetail", ex.Message, "Service"); return new List<PayCalculationModel>(); }
+        }
+
+        public PayrollCalculationDetailViewModel GetPayrollCalculationDetailViewModel(int calculationId)
+        {
+            try
+            {
+                var headers = _payrollCalculationDetailDao.ReadHeaderDetails(calculationId);
+                var comps = _payrollCalculationDetailDao.ReadComponents(calculationId);
+                var totals = _payrollCalculationDetailDao.ReadTotalAmounts(calculationId);
+
+                return new PayrollCalculationDetailViewModel
+                {
+                    PayrollCalculationDetailHeader = headers,
+                    PayrollComponent = comps,
+                    payrollComponentTotal = totals
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetPayrollCalculationDetailViewModel", ex.Message, "Service");
+                return new PayrollCalculationDetailViewModel();
+            }
+        }
+
+        public IList<ReportJamsostekPerubahanUpahViewModel> GetReportJPU(int areaId, int processId, int seqNumber, string year)
+        {
+            try { return _payrollCalculationDetailDao.ReadReportJPU(areaId, processId, seqNumber, year); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetReportJPU", ex.Message, "Service"); return new List<ReportJamsostekPerubahanUpahViewModel>(); }
+        }
+
+        public IList<ReportJamsostek2aViewModel> GetReportJamsostek2a(int areaId, int processId, string year, int seqNumber)
+        {
+            try { return _payrollCalculationDetailDao.ReadReportJamsostek2a(areaId, processId, year, seqNumber); }
+            catch (Exception ex) { _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetReportJamsostek2a", ex.Message, "Service"); return new List<ReportJamsostek2aViewModel>(); }
         }
 
         public void ProcessPayrollCalculation(int calculationId, int payrollAreaId, int payrollProcessId, DateTime beginDate, DateTime endDate)
