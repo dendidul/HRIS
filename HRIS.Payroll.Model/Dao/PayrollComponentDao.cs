@@ -29,7 +29,15 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_components WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, payroll_component_id, short_desc, long_desc, amount_type, 
+                               amount, amount_minimum, amount_maximum, object_id, 
+                               proportional_type, begin_date, end_date, transaction_flag, 
+                               proportional_id, delete_flag, marital_status, currency_id, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_payroll_components 
+                        WHERE delete_flag = 0 OR delete_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<PayComponentModel>(sql).ToList();
                 }
             }
@@ -45,7 +53,14 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_components WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, payroll_component_id, short_desc, long_desc, amount_type, 
+                               amount, amount_minimum, amount_maximum, object_id, 
+                               proportional_type, begin_date, end_date, transaction_flag, 
+                               proportional_id, delete_flag, marital_status, currency_id, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_payroll_components 
+                        WHERE id = @Id;";
                     return conn.Query<PayComponentModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

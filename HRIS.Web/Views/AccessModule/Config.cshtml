@@ -27,34 +27,38 @@
             <div class="row">
                 <div class="col-6">
                     <ul id="browser" class="easyui-tree editor-field table table-striped table-advance table-hover">
-                        @foreach (var item in Model.ListMenu.Where(x => x.parent_id == 0 && x.id != 0))
+                        @if (Model?.ListMenu != null && Model.ListMenu.Any())
                         {
-                            <li class="sub-menu">
-                                @if (Model.ListSelectedMenu.Where(x => x.id == item.id).FirstOrDefault() != null)
-                                {
-                                    <span class="easyui-tree"><input type="checkbox" id="tt" class="easyui-tree" name="SelectedMenu" checked="checked" value="@item.id">@item.menu_name</span>
-                                }
-                                else
-                                {
-                                    <span class="easyui-tree"><input type="checkbox" id="tt" class="easyui-tree" name="SelectedMenu" value="@item.id">@item.menu_name</span>
-                                }
-                                <ul class="sub">
-                                    @foreach (var child in Model.ListMenu.Where(x => x.parent_id == item.id))
+                            var selectedIds = new HashSet<int>(Model.ListSelectedMenu?.Select(x => x.id) ?? Enumerable.Empty<int>());
+                            @foreach (var item in Model.ListMenu.Where(x => x != null && x.parent_id == 0 && x.id != 0))
+                            {
+                                <li class="sub-menu">
+                                    @if (selectedIds.Contains(item.id))
                                     {
-                                        <li>
-                                            @if (Model.ListSelectedMenu.Where(x => x.id == child.id).FirstOrDefault() != null)
-                                            {
-                                                <span class="easyui-tree"><input type="checkbox" class="easyui-tree" name="SelectedChildMenu" checked="checked" value="@child.id">@child.menu_name</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="easyui-tree"><input type="checkbox" class="easyui-tree" name="SelectedChildMenu" value="@child.id">@child.menu_name</span>
-                                            }
-                                        </li>
+                                        <span class="easyui-tree"><input type="checkbox" id="tt" class="easyui-tree" name="SelectedMenu" checked="checked" value="@item.id">@item.menu_name</span>
                                     }
+                                    else
+                                    {
+                                        <span class="easyui-tree"><input type="checkbox" id="tt" class="easyui-tree" name="SelectedMenu" value="@item.id">@item.menu_name</span>
+                                    }
+                                    <ul class="sub">
+                                        @foreach (var child in Model.ListMenu.Where(x => x != null && x.parent_id == item.id))
+                                        {
+                                            <li>
+                                                @if (selectedIds.Contains(child.id))
+                                                {
+                                                    <span class="easyui-tree"><input type="checkbox" class="easyui-tree" name="SelectedChildMenu" checked="checked" value="@child.id">@child.menu_name</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="easyui-tree"><input type="checkbox" class="easyui-tree" name="SelectedChildMenu" value="@child.id">@child.menu_name</span>
+                                                }
+                                            </li>
+                                        }
 
-                                </ul>
-                            </li>
+                                    </ul>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

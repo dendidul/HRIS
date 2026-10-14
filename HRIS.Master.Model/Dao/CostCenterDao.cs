@@ -29,7 +29,11 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_cost_centers WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, cost_center_code, description, begin_date, end_date, del_flag 
+                        FROM bos_cost_centers 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<CostCenterModel>(sql).ToList();
                 }
             }
@@ -45,7 +49,10 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_cost_centers WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, cost_center_code, description, begin_date, end_date, del_flag 
+                        FROM bos_cost_centers 
+                        WHERE id = @Id;";
                     return conn.Query<CostCenterModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

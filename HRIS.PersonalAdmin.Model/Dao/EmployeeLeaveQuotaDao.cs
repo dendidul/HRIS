@@ -30,7 +30,7 @@ namespace HRIS.PersonalAdmin.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT q.*, 
+                        SELECT q.id, q.status_employee_id, q.unattendance_id, q.quota, q.actfl,
                                q.begdt AS begin_date, 
                                q.enddt AS end_date, 
                                q.flag_delete AS del_flag,
@@ -61,7 +61,7 @@ namespace HRIS.PersonalAdmin.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT q.*, 
+                        SELECT q.id, q.status_employee_id, q.unattendance_id, q.quota, q.actfl,
                                q.begdt AS begin_date, 
                                q.enddt AS end_date, 
                                q.flag_delete AS del_flag,
@@ -69,7 +69,7 @@ namespace HRIS.PersonalAdmin.Model.Dao
                                q.moddt AS modified_date,
                                p.person_code AS ""EmployeeId"",
                                p.first_name AS ""EmployeeName"",
-                               u.unattendance_id AS ""UnattendanceCode""
+                               u.short_desc AS ""UnattendanceCode""
                         FROM bos_employee_quota q
                         LEFT JOIN bos_people p ON q.status_employee_id = p.id
                         LEFT JOIN bos_unattendances u ON q.unattendance_id = u.id

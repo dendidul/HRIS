@@ -29,7 +29,14 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_tax_parameters WHERE flag_delete = 0 OR flag_delete IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, tax_parameter_id, short_desc, long_desc, begin_date, end_date, 
+                               max_position_tax, position_tax_percentage, tax_component_id, 
+                               tax_allowance_id, flag_delete, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_tax_parameters 
+                        WHERE flag_delete = 0 OR flag_delete IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<TaxParameterModel>(sql).ToList();
                 }
             }
@@ -45,7 +52,13 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_tax_parameters WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, tax_parameter_id, short_desc, long_desc, begin_date, end_date, 
+                               max_position_tax, position_tax_percentage, tax_component_id, 
+                               tax_allowance_id, flag_delete, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_tax_parameters 
+                        WHERE id = @Id;";
                     return conn.Query<TaxParameterModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

@@ -29,7 +29,13 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_calculations ORDER BY id DESC;";
+                    const string sql = @"
+                        SELECT id, seq_number, year_period, payroll_periode_id, payroll_area_id, 
+                               payroll_process_id, begin_date, end_date, running_status, 
+                               running_date, running_by, total_employee, processed_employee, 
+                               is_logged, pdf_log_generated, start_time, end_time, total_time 
+                        FROM bos_payroll_calculations 
+                        ORDER BY id DESC;";
                     return conn.Query<PayCalculationModel>(sql).ToList();
                 }
             }
@@ -45,7 +51,13 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_calculations WHERE id = @id;";
+                    const string sql = @"
+                        SELECT id, seq_number, year_period, payroll_periode_id, payroll_area_id, 
+                               payroll_process_id, begin_date, end_date, running_status, 
+                               running_date, running_by, total_employee, processed_employee, 
+                               is_logged, pdf_log_generated, start_time, end_time, total_time 
+                        FROM bos_payroll_calculations 
+                        WHERE id = @id;";
                     return conn.Query<PayCalculationModel>(sql, new { id = model.id }).FirstOrDefault();
                 }
             }
@@ -121,7 +133,11 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_calc_results WHERE payroll_calculation_id = @calculationId;";
+                    const string sql = @"
+                        SELECT id, payroll_calculation_id, employee_id, payroll_component_id, 
+                               transaction_type, payroll_component_amount, payroll_component, flag 
+                        FROM bos_payroll_calc_results 
+                        WHERE payroll_calculation_id = @calculationId;";
                     return conn.Query<PayCalcResultModel>(sql, new { calculationId }).ToList();
                 }
             }

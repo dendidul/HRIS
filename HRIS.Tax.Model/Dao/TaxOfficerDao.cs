@@ -29,7 +29,11 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_tax_service_offices WHERE flag_delete = 0 OR flag_delete IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, address_id, tax_office_code, short_desc, long_desc, flag_delete 
+                        FROM bos_tax_service_offices 
+                        WHERE flag_delete = 0 OR flag_delete IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<TaxServiceOfficeModel>(sql).ToList();
                 }
             }
@@ -45,7 +49,10 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_tax_service_offices WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, address_id, tax_office_code, short_desc, long_desc, flag_delete 
+                        FROM bos_tax_service_offices 
+                        WHERE id = @Id;";
                     return conn.Query<TaxServiceOfficeModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

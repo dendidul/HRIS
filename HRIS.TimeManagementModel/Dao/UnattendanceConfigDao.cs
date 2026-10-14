@@ -29,7 +29,14 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_unattendances WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, unattendance_id, short_desc, long_desc, un_attendance_unit, 
+                               un_attendance_quota, amount_of_increment, request_flag, 
+                               default_timesheet_flag, un_attendance_period, increment_period, 
+                               delete_flag AS del_flag, created_by, created_date, modified_by, modified_date 
+                        FROM bos_unattendances 
+                        WHERE delete_flag = 0 OR delete_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<UnattendanceModel>(sql).ToList();
                 }
             }
@@ -45,7 +52,13 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_unattendances WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, unattendance_id, short_desc, long_desc, un_attendance_unit, 
+                               un_attendance_quota, amount_of_increment, request_flag, 
+                               default_timesheet_flag, un_attendance_period, increment_period, 
+                               delete_flag AS del_flag, created_by, created_date, modified_by, modified_date 
+                        FROM bos_unattendances 
+                        WHERE id = @Id;";
                     return conn.Query<UnattendanceModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

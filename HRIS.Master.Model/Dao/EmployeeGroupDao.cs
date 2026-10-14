@@ -29,7 +29,11 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_employee_groups WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, group_code AS ""Group_code"", short_desc, long_desc, del_flag 
+                        FROM bos_employee_groups 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<EmployeeGroupModel>(sql).ToList();
                 }
             }
@@ -45,7 +49,10 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_employee_groups WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, group_code AS ""Group_code"", short_desc, long_desc, del_flag 
+                        FROM bos_employee_groups 
+                        WHERE id = @Id;";
                     return conn.Query<EmployeeGroupModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

@@ -28,7 +28,11 @@ namespace HRIS.Payroll.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT a.*, 
+                        SELECT a.id, a.seq_number, a.year_period, a.payroll_periode_id, 
+                               a.payroll_area_id, a.payroll_process_id, a.begin_date, a.end_date, 
+                               a.running_status, a.running_date, a.running_by, a.total_employee, 
+                               a.processed_employee, a.is_logged, a.pdf_log_generated, 
+                               a.start_time, a.end_time, a.total_time,
                                b.short_desc AS payroll_area_desc, 
                                c.short_desc AS payroll_process_desc
                         FROM bos_payroll_calculations a

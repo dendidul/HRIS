@@ -30,11 +30,13 @@ namespace HRIS.TimeManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT c.*, 
-                               c.delete_flag AS del_flag, 
-                               a.area_code, 
-                               w.workgroup_id AS workgroup_code, 
-                               u.unattendance_id AS attendance_code 
+                        SELECT c.id, c.personal_area_id, c.workgroup_id, c.starting_time, 
+                               c.delete_flag AS del_flag, c.unattendance_id, c.created_by, 
+                               c.modified_by, c.created_date, c.modified_date, c.remark, 
+                               c.begin_date, c.end_date,
+                               a.short_desc AS area_desc,
+                               w.short_desc AS workgroup_desc,
+                               u.short_desc AS unattendance_desc
                         FROM bos_company_calendars c
                         LEFT JOIN bos_areas a ON c.personal_area_id = a.id
                         LEFT JOIN bos_workgroups w ON c.workgroup_id = w.id
@@ -56,7 +58,13 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_company_calendars WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, personal_area_id, workgroup_id, starting_time, 
+                               delete_flag AS del_flag, unattendance_id, created_by, 
+                               modified_by, created_date, modified_date, remark, 
+                               begin_date, end_date 
+                        FROM bos_company_calendars 
+                        WHERE id = @Id;";
                     return conn.Query<CompanyCalendarModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

@@ -30,10 +30,11 @@ namespace HRIS.UserManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT u.*, 
+                        SELECT u.id, u.username, u.password, u.role_id, u.status_employee_id, 
+                               u.activate, u.flag_delete AS del_flag, u.created, u.modified, 
+                               u.created_by, u.modified_by, 
                                u.created_date AS ""createdDate"",
                                u.modified_date AS ""modifiedDate"",
-                               u.flag_delete AS del_flag,
                                p.first_name AS employeename,
                                p.person_code AS employeeid
                         FROM bos_users u
@@ -57,10 +58,11 @@ namespace HRIS.UserManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT u.*, 
+                        SELECT u.id, u.username, u.password, u.role_id, u.status_employee_id, 
+                               u.activate, u.flag_delete AS del_flag, u.created, u.modified, 
+                               u.created_by, u.modified_by, 
                                u.created_date AS ""createdDate"",
                                u.modified_date AS ""modifiedDate"",
-                               u.flag_delete AS del_flag,
                                p.first_name AS employeename,
                                p.person_code AS employeeid
                         FROM bos_users u
@@ -83,10 +85,11 @@ namespace HRIS.UserManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT u.*, 
+                        SELECT u.id, u.username, u.password, u.role_id, u.status_employee_id, 
+                               u.activate, u.flag_delete AS del_flag, u.created, u.modified, 
+                               u.created_by, u.modified_by, 
                                u.created_date AS ""createdDate"",
                                u.modified_date AS ""modifiedDate"",
-                               u.flag_delete AS del_flag,
                                p.first_name AS employeename,
                                p.person_code AS employeeid
                         FROM bos_users u

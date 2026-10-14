@@ -419,8 +419,10 @@ namespace HRIS.Service.Manager
                         }
 
                         // Fetch recurring components for this employee
-                        var sqlRecurring = @"SELECT * FROM bos_pay_recurring_comps 
-                                             WHERE employee_id = @empId AND (delete_flag = 0 OR delete_flag IS NULL)";
+                        var sqlRecurring = @"SELECT id, employee_id, payroll_component_id, comp_amount, 
+                                                   begin_date, end_date, delete_flag, ref, currency_id 
+                                            FROM bos_pay_recurring_comps 
+                                            WHERE employee_id = @empId AND (delete_flag = 0 OR delete_flag IS NULL)";
                         var recurring = conn.Query<PayRecurringComponentModel>(sqlRecurring, new { empId }).ToList();
 
                         foreach (var rec in recurring)
@@ -442,7 +444,10 @@ namespace HRIS.Service.Manager
                         }
 
                         // Fetch one-time transactions for this employee
-                        var sqlOneTime = @"SELECT * FROM bos_pay_onetime_trans 
+                        var sqlOneTime = @"SELECT id, employee_id, number_period, fiscal_year, 
+                                                  payroll_component_id, comp_trans_type, comp_amount, 
+                                                  begin_date, end_date, payroll_process_id, currency_id, del_flag 
+                                           FROM bos_pay_onetime_trans 
                                            WHERE employee_id = @empId AND (del_flag = 0 OR del_flag IS NULL)";
                         var oneTimes = conn.Query<PayOneTimeTransactionModel>(sqlOneTime, new { empId }).ToList();
 

@@ -29,7 +29,11 @@ namespace HRIS.UserManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_menu WHERE del_flag = 0 OR del_flag IS NULL ORDER BY index ASC;";
+                    const string sql = @"
+                        SELECT id, menu_name, link, icon, parent_id, index, del_flag, controller_name 
+                        FROM bos_menu 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY index ASC;";
                     return conn.Query<MenuModel>(sql).ToList();
                 }
             }
@@ -45,7 +49,10 @@ namespace HRIS.UserManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_menu WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, menu_name, link, icon, parent_id, index, del_flag, controller_name 
+                        FROM bos_menu 
+                        WHERE id = @Id;";
                     return conn.Query<MenuModel>(sql, new { Id = id }).FirstOrDefault();
                 }
             }

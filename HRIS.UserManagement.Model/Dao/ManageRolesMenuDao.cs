@@ -89,7 +89,11 @@ namespace HRIS.UserManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_manage_roles_menu WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, role_id, menu_id, del_flag 
+                        FROM bos_manage_roles_menu 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<ManageRolesMenuModel>(sql).ToList();
                 }
             }

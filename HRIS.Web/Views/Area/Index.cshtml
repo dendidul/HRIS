@@ -24,24 +24,27 @@
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
-                    @foreach (var item in Model)
+                    @if (Model != null && Model.Any())
                     {
-                        <tr>
-                            <td>
-                                <strong>@Html.DisplayFor(modelItem => item.area_code)</strong>
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.short_desc)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.long_desc)
-                            </td>
-                            <td class="text-center">
-                                @Html.ActionLink("Edit", "Edit", "Area", new { id = item.id }, new { @class = "btn btn-sm btn-outline-primary me-1" })
-                                @Html.ActionLink("Details", "Details", "Area", new { id = item.id }, new { @class = "btn btn-sm btn-outline-info me-1" })
-                                @Html.ActionLink("Delete", "Delete", new { id = item.id }, new { @class = "btn btn-sm btn-outline-danger" })
-                            </td>
-                        </tr>
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@Html.DisplayFor(modelItem => item.area_code)</strong>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.short_desc)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.long_desc)
+                                </td>
+                                <td class="text-center">
+                                    @Html.ActionLink("Edit", "Edit", "Area", new { id = item.id }, new { @class = "btn btn-sm btn-outline-primary me-1" })
+                                    @Html.ActionLink("Details", "Details", "Area", new { id = item.id }, new { @class = "btn btn-sm btn-outline-info me-1" })
+                                    @Html.ActionLink("Delete", "Delete", new { id = item.id }, new { @class = "btn btn-sm btn-outline-danger" })
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

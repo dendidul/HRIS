@@ -29,7 +29,14 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_time_frames WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, time_frame_id, short_desc, long_desc, starting_time, 
+                               tolerance_time, duration_time, time_frame_type, 
+                               delete_flag AS del_flag, created_by, created_date, 
+                               modified_by, modified_date 
+                        FROM bos_time_frames 
+                        WHERE delete_flag = 0 OR delete_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<TimeFrameModel>(sql).ToList();
                 }
             }
@@ -45,7 +52,13 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_time_frames WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, time_frame_id, short_desc, long_desc, starting_time, 
+                               tolerance_time, duration_time, time_frame_type, 
+                               delete_flag AS del_flag, created_by, created_date, 
+                               modified_by, modified_date 
+                        FROM bos_time_frames 
+                        WHERE id = @Id;";
                     return conn.Query<TimeFrameModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

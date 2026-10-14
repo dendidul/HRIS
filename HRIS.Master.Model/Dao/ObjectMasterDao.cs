@@ -29,7 +29,12 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_object_masters WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, object_type, format_number, last_number, controller_name, 
+                               ess_controller_name, view_admin, view_ess, del_flag 
+                        FROM bos_object_masters 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<ObjectMasterModel>(sql).ToList();
                 }
             }
@@ -45,7 +50,11 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_object_masters WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, object_type, format_number, last_number, controller_name, 
+                               ess_controller_name, view_admin, view_ess, del_flag 
+                        FROM bos_object_masters 
+                        WHERE id = @Id;";
                     return conn.Query<ObjectMasterModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

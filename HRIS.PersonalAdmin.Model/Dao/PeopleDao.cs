@@ -30,7 +30,9 @@ namespace HRIS.PersonalAdmin.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT p.*,
+                        SELECT p.id, p.person_code, p.first_name, p.middle_name, p.last_name, 
+                               p.birth_place, p.gender, p.birth_date, p.religion, 
+                               p.marital_status_id, p.photo_path, p.photo_name,
                                COALESCE(epa.nik, p.person_code) AS nik,
                                COALESCE(epa.status_employee, 'AKTIF') AS status_employee,
                                epa.hire_date AS hire_date,

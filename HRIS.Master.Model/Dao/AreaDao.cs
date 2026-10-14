@@ -29,7 +29,13 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_areas WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, area_code, short_desc, long_desc, begin_date, end_date, 
+                               del_flag, created_by, created_date, modified_by, modified_date, 
+                               hierarchy_id, tax_service_office_id 
+                        FROM bos_areas 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<AreaModel>(sql).ToList();
                 }
             }
@@ -45,7 +51,12 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_areas WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, area_code, short_desc, long_desc, begin_date, end_date, 
+                               del_flag, created_by, created_date, modified_by, modified_date, 
+                               hierarchy_id, tax_service_office_id 
+                        FROM bos_areas 
+                        WHERE id = @Id;";
                     return conn.Query<AreaModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

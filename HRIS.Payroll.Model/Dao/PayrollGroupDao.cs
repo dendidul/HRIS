@@ -29,7 +29,12 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_groups WHERE delfl = 0 OR delfl IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, pgrid, sdesc, payroll_periode_id, begdt, enddt, 
+                               delfl, created_by, created_date, modified_by, modified_date 
+                        FROM bos_payroll_groups 
+                        WHERE delfl = 0 OR delfl IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<PayGroupModel>(sql).ToList();
                 }
             }
@@ -45,7 +50,11 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_payroll_groups WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, pgrid, sdesc, payroll_periode_id, begdt, enddt, 
+                               delfl, created_by, created_date, modified_by, modified_date 
+                        FROM bos_payroll_groups 
+                        WHERE id = @Id;";
                     return conn.Query<PayGroupModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

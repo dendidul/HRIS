@@ -1,6 +1,6 @@
 ﻿@{
-    List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl1 = ViewBag.Menu;
-    List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl2 = ViewBag.Menu;
+    List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl1 = ViewBag.Menu ?? new List<HRIS.General.Model.ViewModel.RoleMenuViewModel>();
+    List<HRIS.General.Model.ViewModel.RoleMenuViewModel> MenuLvl2 = ViewBag.Menu ?? new List<HRIS.General.Model.ViewModel.RoleMenuViewModel>();
 }
 
 @functions {
@@ -33,9 +33,9 @@
 
     @if (MenuLvl1 != null && MenuLvl1.Any())
     {
-        @foreach (var mp in MenuLvl1.Where(p => p.ParentMenuId == 0 && p.Level == 1).OrderBy(p => p.Sequence))
+        @foreach (var mp in MenuLvl1.Where(p => p != null && p.ParentMenuId == 0 && p.Level == 1).OrderBy(p => p.Sequence))
         {
-            var children = MenuLvl2.Where(model => model.ParentMenuId == mp.MenuId && model.Level == 2).ToList();
+            var children = MenuLvl2.Where(model => model != null && model.ParentMenuId == mp.MenuId && model.Level == 2).ToList();
             var hasChild = children.Count > 0;
             var iconClass = string.IsNullOrEmpty(mp.icon) ? "bx bx-grid-alt" : mp.icon;
             
@@ -54,7 +54,7 @@
                 @if (hasChild)
                 {
                     <ul class="menu-sub">
-                        @foreach (var child in children)
+                        @foreach (var child in children.Where(c => c != null))
                         {
                             <li class="menu-item">
                                 <a href="@ResolveMenuUrl(child.Link)" class="menu-link">

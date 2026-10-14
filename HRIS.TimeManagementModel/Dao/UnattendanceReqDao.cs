@@ -30,7 +30,10 @@ namespace HRIS.TimeManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT u.*, 
+                        SELECT u.id, u.employee_id, u.unattendance_id, u.start_date, u.last_date, 
+                               u.no_unit, u.doc_number, u.object_type, u.revision, u.app_level, 
+                               u.approved, u.rejected, u.note, u.request_status, u.note_admin,
+                               u.created_by, u.created_date, u.modified_by, u.modified_date,
                                u.flag_delete AS del_flag,
                                COALESCE(epa.nik, p.person_code) AS NIK,
                                (p.first_name || ' ' || COALESCE(p.middle_name, '') || ' ' || COALESCE(p.last_name, '')) AS EmployeeName,
@@ -57,7 +60,10 @@ namespace HRIS.TimeManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT u.*, 
+                        SELECT u.id, u.employee_id, u.unattendance_id, u.start_date, u.last_date, 
+                               u.no_unit, u.doc_number, u.object_type, u.revision, u.app_level, 
+                               u.approved, u.rejected, u.note, u.request_status, u.note_admin,
+                               u.created_by, u.created_date, u.modified_by, u.modified_date,
                                u.flag_delete AS del_flag,
                                p.person_code AS NIK,
                                p.first_name AS EmployeeName,

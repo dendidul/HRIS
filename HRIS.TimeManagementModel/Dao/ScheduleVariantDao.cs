@@ -29,7 +29,13 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_schedule_variants WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, schedule_variant_id, short_desc, long_desc, 
+                               delete_flag AS del_flag, created_by, created_date, 
+                               modified_by, modified_date 
+                        FROM bos_schedule_variants 
+                        WHERE delete_flag = 0 OR delete_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<ScheduleVariantModel>(sql).ToList();
                 }
             }
@@ -45,7 +51,12 @@ namespace HRIS.TimeManagement.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT *, delete_flag AS del_flag FROM bos_schedule_variants WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, schedule_variant_id, short_desc, long_desc, 
+                               delete_flag AS del_flag, created_by, created_date, 
+                               modified_by, modified_date 
+                        FROM bos_schedule_variants 
+                        WHERE id = @Id;";
                     return conn.Query<ScheduleVariantModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

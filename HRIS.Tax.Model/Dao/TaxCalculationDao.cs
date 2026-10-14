@@ -36,7 +36,15 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    data = conn.Query<TaxCalcModel>("SELECT * FROM bos_tax_calculations ORDER BY id DESC").ToList();
+                    const string sql = @"
+                        SELECT id, status_employee_id, sequence, year_period, 
+                               regular_net, regular_gross, irregular_net, irregular_gross, 
+                               ptkp, tax_paid, payroll_process_id, position_cost, kpp, 
+                               tax_allowance, payment_regular_net, deduction_regular_net, 
+                               tax_regular_net, tax_service_office_id 
+                        FROM bos_tax_calculations 
+                        ORDER BY id DESC;";
+                    data = conn.Query<TaxCalcModel>(sql).ToList();
                 }
             }
             catch
@@ -53,7 +61,15 @@ namespace HRIS.Tax.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    data = conn.Query<TaxCalcModel>("SELECT * FROM bos_tax_calculations WHERE id = @id", new { id }).FirstOrDefault();
+                    const string sql = @"
+                        SELECT id, status_employee_id, sequence, year_period, 
+                               regular_net, regular_gross, irregular_net, irregular_gross, 
+                               ptkp, tax_paid, payroll_process_id, position_cost, kpp, 
+                               tax_allowance, payment_regular_net, deduction_regular_net, 
+                               tax_regular_net, tax_service_office_id 
+                        FROM bos_tax_calculations 
+                        WHERE id = @id;";
+                    data = conn.Query<TaxCalcModel>(sql, new { id }).FirstOrDefault();
                 }
             }
             catch

@@ -41,6 +41,8 @@
                 </tr>
             </thead>
             <tbody>
+                @if (Model != null && Model.Any())
+            {
                 @foreach (var item in Model)
                 {
                 <tr>
@@ -89,6 +91,8 @@
                         @Html.ActionLink("Delete", "Delete", "Employee", new { id = item.id }, new { @class = "btn btn-danger m-b-5" })
                     </td>
                 </tr>
+                }
+            }
                 }
             </tbody>
         </table>

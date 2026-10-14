@@ -29,7 +29,12 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_bank_sources WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, bank_source_id, rec_number, bank_name, del_flag, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_bank_sources 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<BankSourceModel>(sql).ToList();
                 }
             }
@@ -45,7 +50,11 @@ namespace HRIS.Master.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_bank_sources WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, bank_source_id, rec_number, bank_name, del_flag, 
+                               created_by, created_date, modified_by, modified_date 
+                        FROM bos_bank_sources 
+                        WHERE id = @Id;";
                     return conn.Query<BankSourceModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

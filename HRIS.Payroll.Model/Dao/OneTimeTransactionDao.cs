@@ -29,7 +29,14 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_pay_onetime_trans WHERE del_flag = 0 OR del_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, employee_id, number_period, fiscal_year, payroll_component_id, 
+                               comp_trans_type, comp_amount, begin_date, end_date, 
+                               payroll_process_id, currency_id, del_flag, 
+                               created_by, created_date, modifed_by, modifed_date 
+                        FROM bos_pay_onetime_trans 
+                        WHERE del_flag = 0 OR del_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<PayOneTimeTransactionModel>(sql).ToList();
                 }
             }
@@ -45,7 +52,13 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_pay_onetime_trans WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, employee_id, number_period, fiscal_year, payroll_component_id, 
+                               comp_trans_type, comp_amount, begin_date, end_date, 
+                               payroll_process_id, currency_id, del_flag, 
+                               created_by, created_date, modifed_by, modifed_date 
+                        FROM bos_pay_onetime_trans 
+                        WHERE id = @Id;";
                     return conn.Query<PayOneTimeTransactionModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }

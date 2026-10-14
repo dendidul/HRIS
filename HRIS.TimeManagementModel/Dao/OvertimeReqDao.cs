@@ -30,7 +30,10 @@ namespace HRIS.TimeManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT o.*, 
+                        SELECT o.id, o.description, o.unit_id, o.overtime_date, 
+                               o.doc_number, o.running_status, o.created_id, o.rejected, 
+                               o.app_level, o.revision, o.object_type, o.note, o.approved, 
+                               o.request_status,
                                o.created AS created_date,
                                o.modified AS modified_date,
                                COALESCE(epa.nik, p.person_code) AS NIK,
@@ -59,12 +62,15 @@ namespace HRIS.TimeManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT o.*, 
+                        SELECT o.id, o.description, o.unit_id, o.overtime_date, 
+                               o.doc_number, o.running_status, o.created_id, o.rejected, 
+                               o.app_level, o.revision, o.object_type, o.note, o.approved, 
+                               o.request_status,
                                o.created AS created_date,
                                o.modified AS modified_date,
                                p.person_code AS NIK,
                                p.first_name AS EmployeeName,
-                               u.unit_id AS UnitCode
+                               u.short_desc AS UnitCode
                         FROM bos_overtime_requests o
                         LEFT JOIN bos_people p ON o.employee_id = p.id
                         LEFT JOIN bos_units u ON o.unit_id = u.id

@@ -29,7 +29,13 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_pay_recurring_comps WHERE delete_flag = 0 OR delete_flag IS NULL ORDER BY id ASC;";
+                    const string sql = @"
+                        SELECT id, employee_id, payroll_component_id, comp_amount, 
+                               begin_date, end_date, delete_flag, ref, currency_id, 
+                               created_by, created_date, updated_by, updated_date 
+                        FROM bos_pay_recurring_comps 
+                        WHERE delete_flag = 0 OR delete_flag IS NULL 
+                        ORDER BY id ASC;";
                     return conn.Query<PayRecurringComponentModel>(sql).ToList();
                 }
             }
@@ -45,7 +51,12 @@ namespace HRIS.Payroll.Model.Dao
             {
                 using (IDbConnection conn = Connection)
                 {
-                    const string sql = "SELECT * FROM bos_pay_recurring_comps WHERE id = @Id;";
+                    const string sql = @"
+                        SELECT id, employee_id, payroll_component_id, comp_amount, 
+                               begin_date, end_date, delete_flag, ref, currency_id, 
+                               created_by, created_date, updated_by, updated_date 
+                        FROM bos_pay_recurring_comps 
+                        WHERE id = @Id;";
                     return conn.Query<PayRecurringComponentModel>(sql, new { Id = model.id }).FirstOrDefault();
                 }
             }
