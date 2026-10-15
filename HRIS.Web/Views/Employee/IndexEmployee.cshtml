@@ -1,0 +1,543 @@
+@model HRIS.General.Model.PersonalAdmin.EmployeeAttributeViewModel
+
+@{
+    ViewData["Title"] = "My Profile (ESS)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var fullName = $"{Model.People?.first_name} {Model.People?.middle_name} {Model.People?.last_name}".Trim();
+    if (string.IsNullOrWhiteSpace(fullName))
+    {
+        fullName = "My Profile";
+    }
+}
+
+<div class="container-xxl flex-grow-1">
+    <!-- Header with Breadcrumb (ESS) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-bold mb-1">
+                <span class="text-muted fw-light">ESS /</span> My Profile
+            </h4>
+            <small class="text-muted">Informasi data diri, kepegawaian, kompensasi, waktu & kuota cuti Anda</small>
+        </div>
+        <div>
+            <span class="badge bg-label-primary px-3 py-2 fs-6">
+                <i class="bx bx-user-check me-1"></i> Employee Self Service
+            </span>
+        </div>
+    </div>
+
+    <!-- Profile Header Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start gap-4">
+                <div class="flex-shrink-0 text-center">
+                    @if (!string.IsNullOrEmpty(Model.People?.photo_path))
+                    {
+                        <img src="@Model.People.photo_path" alt="Avatar" class="rounded-circle shadow-sm" style="width: 110px; height: 110px; object-fit: cover;" onerror="this.src='/sneat/img/avatars/1.png';" />
+                    }
+                    else
+                    {
+                        <div class="avatar avatar-xl rounded-circle bg-label-primary d-flex align-items-center justify-content-center shadow-sm" style="width: 110px; height: 110px; font-size: 2.5rem;">
+                            @(string.IsNullOrEmpty(Model.People?.first_name) ? "E" : Model.People.first_name.Substring(0, 1).ToUpper())
+                        </div>
+                    }
+                </div>
+                <div class="flex-grow-1 text-center text-md-start">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                        <h4 class="mb-0 fw-bold">@fullName</h4>
+                        <span class="badge @(Model.EmployeeAttributes?.status_employee == "AKTIF" ? "bg-label-success" : (Model.EmployeeAttributes?.status_employee == "TERMINATE" ? "bg-label-danger" : "bg-label-warning"))">
+                            <i class="bx bx-check-circle me-1"></i>@(Model.EmployeeAttributes?.status_employee ?? "AKTIF")
+                        </span>
+                        <span class="badge bg-label-secondary">
+                            <i class="bx bx-id-card me-1"></i>NIK: @(Model.EmployeeAttributes?.nik ?? Model.People?.person_code ?? "-")
+                        </span>
+                    </div>
+
+                    <div class="row g-2 text-muted small mt-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-briefcase me-1 text-primary"></i> <strong>Jabatan:</strong> @(Model.EmployeeAttributes?.position_desc ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-buildings me-1 text-primary"></i> <strong>Unit:</strong> @(Model.EmployeeAttributes?.unit_desc ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-calendar me-1 text-primary"></i> <strong>Hire Date:</strong> @(Model.EmployeeAttributes?.hire_date?.ToString("dd-MM-yyyy") ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-time me-1 text-primary"></i> <strong>Shift:</strong> @(Model.WorkgroupName ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-envelope me-1 text-primary"></i> <strong>Email:</strong> @(Model.EmployeeAttributes?.email ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-user-check me-1 text-primary"></i> <strong>Atasan:</strong> @(Model.SupervisorName ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-wallet me-1 text-primary"></i> <strong>Cost Center:</strong> @(Model.EmployeeAttributes?.cost_center_desc ?? "-")
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <i class="bx bx-fingerprint me-1 text-primary"></i> <strong>Fingerprint ID:</strong> @(Model.EmpTime?.finger_id?.ToString() ?? "-")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-align-top mb-4">
+        <ul class="nav nav-tabs nav-fill" role="tablist">
+            <li class="nav-item">
+                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#tab-personal">
+                    <i class="bx bx-user me-1"></i> Profil Pribadi
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-employment">
+                    <i class="bx bx-briefcase-alt-2 me-1"></i> Kepegawaian
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-payroll">
+                    <i class="bx bx-dollar-circle me-1"></i> Payroll & Bank
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tax">
+                    <i class="bx bx-receipt me-1"></i> Perpajakan
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-time">
+                    <i class="bx bx-time-five me-1"></i> Waktu & Kehadiran
+                </button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-quota">
+                    <i class="bx bx-calendar-event me-1"></i> Kuota Cuti (@Model.QuotesList.Count)
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content bg-white p-4">
+            <!-- TAB 1: PROFIL PRIBADI -->
+            <div class="tab-pane fade show active" id="tab-personal" role="tabpanel">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-id-card me-1"></i> Informasi Dasar Pribadi
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">NIK</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.nik ?? Model.People?.person_code ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Nama Lengkap</label>
+                        <div class="fw-semibold">@fullName</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Jenis Kelamin</label>
+                        <div class="fw-semibold">
+                            @(Model.People?.gender == "M" ? "Laki-laki (Male)" : (Model.People?.gender == "F" ? "Perempuan (Female)" : "-"))
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tempat, Tanggal Lahir</label>
+                        <div class="fw-semibold">
+                            @(Model.People?.birth_place ?? "-"), @(Model.People?.birth_date?.ToString("dd MMMM yyyy") ?? "-")
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Agama</label>
+                        <div class="fw-semibold">@(Model.People?.religion ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Status Pernikahan</label>
+                        <div class="fw-semibold">@(Model.People?.marital_status_id ?? "-")</div>
+                    </div>
+                </div>
+
+                <!-- Pendidikan Terakhir -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-book-reader me-1"></i> Riwayat Pendidikan
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Jenjang Pendidikan</label>
+                        <div class="fw-semibold">@(Model.People?.education ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Institusi / Universitas</label>
+                        <div class="fw-semibold">@(Model.People?.institution ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Jurusan</label>
+                        <div class="fw-semibold">@(Model.People?.majority ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tahun Tempuh</label>
+                        <div class="fw-semibold">
+                            @if (Model.People?.begin_year != null || Model.People?.end_year != null)
+                            {
+                                @($"{Model.People?.begin_year} - {Model.People?.end_year}")
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">IPK / Grade</label>
+                        <div class="fw-semibold">
+                            @if (Model.People?.grade != null)
+                            {
+                                @($"{Model.People.grade} / {Model.People.max_grade ?? 4.0}")
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kontak & Alamat -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-map-pin me-1"></i> Daftar Alamat & Kontak
+                        </h6>
+                        @if (Model.AddressList != null && Model.AddressList.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 25%;">Tipe Alamat</th>
+                                            <th>Alamat Lengkap</th>
+                                            <th style="width: 25%;">No. Telepon</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var addr in Model.AddressList)
+                                        {
+                                            <tr>
+                                                <td><span class="badge bg-label-info">@addr.AddressType</span></td>
+                                                <td>@addr.Address</td>
+                                                <td>@addr.Telp</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small fst-italic">Belum ada data alamat yang tersimpan.</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Data Keluarga -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-group me-1"></i> Data Anggota Keluarga
+                        </h6>
+                        @if (Model.FamilyList != null && Model.FamilyList.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nama Anggota</th>
+                                            <th>Hubungan</th>
+                                            <th>Tanggal Lahir</th>
+                                            <th>Pendidikan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fam in Model.FamilyList)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">@fam.name</td>
+                                                <td><span class="badge bg-label-secondary">@fam.relation_type</span></td>
+                                                <td>@(fam.birthdate?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                                <td>@(fam.education ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small fst-italic">Belum ada data anggota keluarga yang tersimpan.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: KEPEGAWAIAN -->
+            <div class="tab-pane fade" id="tab-employment" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-building-house me-1"></i> Struktur & Atribut Organisasi
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Perusahaan (Company)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.company_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Subgroup Karyawan</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.employee_subgroup_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Unit Kerja / Divisi</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.unit_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Jabatan (Position)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.position_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Pekerjaan (Job)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.job_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Personal Area / Wilayah</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.personal_area_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Atasan Langsung (Supervisor)</label>
+                        <div class="fw-semibold">@(Model.SupervisorName ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Email Resmi</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.email ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Status Karyawan</label>
+                        <div>
+                            <span class="badge @(Model.EmployeeAttributes?.status_employee == "AKTIF" ? "bg-label-success" : "bg-label-warning")">
+                                @(Model.EmployeeAttributes?.status_employee ?? "AKTIF")
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tanggal Masuk (Hire Date)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.hire_date?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Akhir Kontrak (End Contract)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.end_contract?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tanggal Berhenti (Terminate)</label>
+                        <div class="fw-semibold text-danger">@(Model.EmployeeAttributes?.terminate_date?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PAYROLL & KOMPENSASI -->
+            <div class="tab-pane fade" id="tab-payroll" role="tabpanel">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-money me-1"></i> Kompensasi & Payroll
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Payroll Area</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.payroll_area_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Payroll Group</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.payroll_group_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Level / Grade</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.level_grade_desc ?? "-") / @(Model.EmployeeAttributes?.employee_grade_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Gaji Pokok (Basic Wage)</label>
+                        <div class="fw-semibold text-success fs-6">
+                            @(Model.EmployeeAttributes?.employee_currency ?? "IDR") 
+                            @{
+                                if (decimal.TryParse(Model.EmployeeAttributes?.employee_basic_wage, out decimal wage))
+                                {
+                                    @wage.ToString("N0")
+                                }
+                                else
+                                {
+                                    @(Model.EmployeeAttributes?.employee_basic_wage ?? "0")
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Cost Center</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.cost_center_desc ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Bank Sumber (Bank Source)</label>
+                        <div class="fw-semibold">@(Model.EmployeeAttributes?.bank_source_desc ?? "-")</div>
+                    </div>
+                </div>
+
+                <!-- Rekening Bank Karyawan -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-credit-card me-1"></i> Rekening Bank Karyawan
+                        </h6>
+                        @if (Model.BankList != null && Model.BankList.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nama Bank</th>
+                                            <th>Nomor Rekening</th>
+                                            <th>Persentase Transfer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var b in Model.BankList)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold"><i class="bx bx-credit-card-front me-1 text-primary"></i>@b.bank_name</td>
+                                                <td><code>@b.bank_account</code></td>
+                                                <td>@(b.transfer_porsentase != null ? $"{b.transfer_porsentase}%" : "100%")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small fst-italic">Belum ada data rekening bank yang tersimpan.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: PERPAJAKAN -->
+            <div class="tab-pane fade" id="tab-tax" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-file me-1"></i> Atribut Pajak Karyawan
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">No. NPWP (Employee Tax ID)</label>
+                        <div class="fw-semibold">@(Model.EmpTax?.employee_tax_id ?? Model.EmployeeAttributes?.nik ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Status PTKP (Tax Status)</label>
+                        <div class="fw-semibold">
+                            <span class="badge bg-label-info">@(Model.TaxStatus ?? Model.EmpTax?.tax_type ?? "-")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Kantor Pelayanan Pajak (KPP)</label>
+                        <div class="fw-semibold">@(Model.Kpp ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tanggal Berlaku Pajak (Begin Date)</label>
+                        <div class="fw-semibold">@(Model.EmpTax?.begin_date?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tanggal Selesai (End Date)</label>
+                        <div class="fw-semibold">@(Model.EmpTax?.end_date?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: WAKTU & KEHADIRAN -->
+            <div class="tab-pane fade" id="tab-time" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-alarm me-1"></i> Pengaturan Waktu & Shift
+                        </h6>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Jadwal Shift / Workgroup</label>
+                        <div class="fw-semibold">
+                            <span class="badge bg-label-primary fs-6">@(Model.WorkgroupName ?? "-")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">Tanggal Mulai Jadwal (Starting Date)</label>
+                        <div class="fw-semibold">@(Model.EmpTime?.starting_date?.ToString("dd MMMM yyyy") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <label class="form-label text-muted mb-0">ID Mesin Fingerprint</label>
+                        <div class="fw-semibold">
+                            <span class="badge bg-label-dark">@(Model.EmpTime?.finger_id?.ToString() ?? "-")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: KUOTA CUTI -->
+            <div class="tab-pane fade" id="tab-quota" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">
+                            <i class="bx bx-calendar-star me-1"></i> Daftar Kuota Cuti & Ketidakhadiran
+                        </h6>
+                        @if (Model.QuotesList != null && Model.QuotesList.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Jenis Cuti / Izin</th>
+                                            <th class="text-center" style="width: 150px;">Sisa / Jumlah Kuota</th>
+                                            <th style="width: 200px;">Mulai Berlaku</th>
+                                            <th style="width: 200px;">Berlaku Sampai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var q in Model.QuotesList)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">
+                                                    <i class="bx bx-tag-alt me-1 text-primary"></i>
+                                                    @(q.UnattendanceCode ?? $"Cuti / Izin #{q.unattendance_id}")
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-label-success fs-6">@(q.quota ?? 0) Hari</span>
+                                                </td>
+                                                <td>@(q.begin_date?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                                <td>@(q.end_date?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+                                <i class="bx bx-info-circle me-2 fs-5"></i>
+                                <div>Belum ada kuota cuti atau ketidakhadiran yang terdaftar untuk karyawan ini.</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

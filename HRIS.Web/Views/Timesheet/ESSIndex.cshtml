@@ -1,0 +1,168 @@
+@model IEnumerable<HRIS.General.Model.TimeManagement.TimesheetModel>
+
+@{
+    ViewData["Title"] = "My Timesheet (ESS)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var empInfo = ViewBag.EmployeeInfo as HRIS.General.Model.TimeManagement.TimesheetFilterModel;
+    var fromDate = ViewBag.FromDate as string ?? DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd");
+    var toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bx bx-error-circle me-1"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Employee Profile & Filter Card -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="card-title mb-0">My Attendance Timesheet</h5>
+            <small class="text-muted">Employee Self Service (ESS)</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-label-info">
+                <i class="bx bx-id-card me-1"></i> NIK: @(empInfo?.NIK ?? "-")
+            </span>
+            <span class="badge bg-label-primary">
+                <i class="bx bx-user me-1"></i> @(empInfo?.EmployeeName ?? "Employee")
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <form asp-action="ESSIndex" method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="fromDate">From Date</label>
+                    <input type="date" class="form-control" id="fromDate" name="fromDate" value="@fromDate" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="toDate">To Date</label>
+                    <input type="date" class="form-control" id="toDate" name="toDate" value="@toDate" required />
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bx bx-filter-alt me-1"></i> View Timesheet
+                    </button>
+                    <a href="@Url.Action("ESSIndex", "Timesheet")" class="btn btn-outline-secondary">
+                        <i class="bx bx-reset"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Timesheet List Card -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Attendance History</h5>
+        <span class="badge bg-label-success">@(Model?.Count() ?? 0) Records</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Schedule In</th>
+                        <th>Actual In</th>
+                        <th>Dev In</th>
+                        <th>Schedule Out</th>
+                        <th>Actual Out</th>
+                        <th>Dev Out</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@(item.transaction_date?.ToString("dd/MM/yyyy") ?? "-")</strong></td>
+                                <td>@(item.time_sch_in?.ToString("HH:mm") ?? "-")</td>
+                                <td>
+                                    @if (item.time_in.HasValue)
+                                    {
+                                        <span class="text-success fw-bold">@item.time_in.Value.ToString("HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_dev_in) && item.time_dev_in != "00:00")
+                                    {
+                                        <span class="badge bg-label-warning">@item.time_dev_in</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">00:00</span>
+                                    }
+                                </td>
+                                <td>@(item.time_sch_out?.ToString("HH:mm") ?? "-")</td>
+                                <td>
+                                    @if (item.time_out.HasValue)
+                                    {
+                                        <span class="text-primary fw-bold">@item.time_out.Value.ToString("HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_dev_out) && item.time_dev_out != "00:00")
+                                    {
+                                        <span class="badge bg-label-info">@item.time_dev_out</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">00:00</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(item.emp_duration) ? "-" : item.emp_duration)</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.unattendance_type))
+                                    {
+                                        <span class="badge bg-label-danger">@item.unattendance_type</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-success">Present</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">
+                                <i class="bx bx-calendar-x fs-1 d-block mb-2"></i>
+                                Tidak ada data absensi untuk rentang tanggal yang dipilih.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
+        });
+    </script>
+}
+

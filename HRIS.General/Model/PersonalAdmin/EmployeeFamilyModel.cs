@@ -14,7 +14,7 @@ namespace HRIS.General.Model.PersonalAdmin
 
         public string name { get; set; }
 
-        public DateTime? birthdate { get; set; }
+        public DateOnly? birthdate { get; set; }
 
         public string education { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,7 +137,7 @@ namespace HRIS.Web
             services.AddControllersWithViews(options =>
             {
                 options.EnableEndpointRouting = false;
-            });
+            }).AddRazorRuntimeCompilation();
             //services.AddSwaggerDocument();
             services.Configure<FormOptions>(x =>
             {

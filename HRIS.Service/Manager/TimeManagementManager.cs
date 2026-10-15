@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using HRIS.General.Model.TimeManagement;
@@ -21,6 +21,8 @@ namespace HRIS.Service.Manager
         private readonly UnattendanceReqDao UnattendanceReqDao;
         private readonly TimesheetReqDao TimesheetReqDao;
         private readonly OvertimeReqDao OvertimeReqDao;
+        private readonly TimeCalculationDao TimeCalculationDao;
+        private readonly TimesheetDao TimesheetDao;
 
         public TimeManagementManager(IConfiguration _config)
         {
@@ -34,7 +36,8 @@ namespace HRIS.Service.Manager
             this.UnattendanceReqDao = new UnattendanceReqDao(_config);
             this.TimesheetReqDao = new TimesheetReqDao(_config);
             this.OvertimeReqDao = new OvertimeReqDao(_config);
-
+            this.TimeCalculationDao = new TimeCalculationDao(_config);
+            this.TimesheetDao = new TimesheetDao(_config);
         }
 
         public string DestinationLogFolder()
@@ -744,5 +747,126 @@ namespace HRIS.Service.Manager
 
             }
         }
+
+        #region Time Calculation
+        public IList<TimeCalculationModel> GetAllTimeCalculation()
+        {
+            try
+            {
+                return TimeCalculationDao.GetAllTimeCalculation();
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetAllTimeCalculation", ex.Message, "Service");
+                return new List<TimeCalculationModel>();
+            }
+        }
+
+        public TimeCalculationModel GetTimeCalculation(int id)
+        {
+            try
+            {
+                return TimeCalculationDao.GetTimeCalculation(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetTimeCalculation", ex.Message, "Service");
+                return null;
+            }
+        }
+
+        public TimeCalculationModel CreateTimeCalculation(TimeCalculationModel model)
+        {
+            try
+            {
+                return TimeCalculationDao.CreateTimeCalculation(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "CreateTimeCalculation", ex.Message, "Service");
+                throw;
+            }
+        }
+
+        public TimeCalculationModel UpdateTimeCalculation(TimeCalculationModel model)
+        {
+            try
+            {
+                return TimeCalculationDao.UpdateTimeCalculation(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "UpdateTimeCalculation", ex.Message, "Service");
+                throw;
+            }
+        }
+
+        public void DeleteTimeCalculation(int id)
+        {
+            try
+            {
+                TimeCalculationDao.DeleteTimeCalculation(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "DeleteTimeCalculation", ex.Message, "Service");
+                throw;
+            }
+        }
+
+        public void RunTimeCalculation(int id)
+        {
+            try
+            {
+                TimeCalculationDao.RunCalculation(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "RunTimeCalculation", ex.Message, "Service");
+                throw;
+            }
+        }
+        #endregion
+
+        #region Timesheet
+        public IList<TimesheetModel> GetTimesheets(DateTime? fromDate, DateTime? toDate, int? areaId, int? workgroupId, int? employeeId, string unattendanceType)
+        {
+            try
+            {
+                return TimesheetDao.GetTimesheets(fromDate, toDate, areaId, workgroupId, employeeId, unattendanceType);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetTimesheets", ex.Message, "Service");
+                return new List<TimesheetModel>();
+            }
+        }
+
+        public IList<TimesheetModel> GetEmployeeTimesheet(int employeeId, DateTime? fromDate, DateTime? toDate)
+        {
+            try
+            {
+                return TimesheetDao.GetEmployeeTimesheet(employeeId, fromDate, toDate);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetEmployeeTimesheet", ex.Message, "Service");
+                return new List<TimesheetModel>();
+            }
+        }
+
+        public TimesheetFilterModel GetEmployeeFilterInfo(int employeeId)
+        {
+            try
+            {
+                return TimesheetDao.GetEmployeeFilterInfo(employeeId);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetEmployeeFilterInfo", ex.Message, "Service");
+                return null;
+            }
+        }
+        #endregion
     }
 }

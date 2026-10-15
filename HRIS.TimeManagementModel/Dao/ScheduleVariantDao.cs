@@ -39,9 +39,9 @@ namespace HRIS.TimeManagement.Model.Dao
                     return conn.Query<ScheduleVariantModel>(sql).ToList();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

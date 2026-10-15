@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,6 +34,7 @@ namespace HRIS.General.Model.TimeManagement
 
         public string TRIAL288 { get; set; }
 
-
+        public string payroll_area_name { get; set; }
+        public string payroll_process_name { get; set; }
     }
 }

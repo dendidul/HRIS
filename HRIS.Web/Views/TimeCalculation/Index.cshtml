@@ -1,19 +1,112 @@
-﻿
+@model IEnumerable<HRIS.General.Model.TimeManagement.TimeCalculationModel>
+
 @{
     ViewData["Title"] = "Time Calculation";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bx bx-check-circle me-1"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bx bx-error-circle me-1"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="card-title mb-0">Time Calculation Batches</h5>
+            <small class="text-muted">Manage batch calculation for employee time & attendance</small>
+        </div>
+        <a class="btn btn-primary" asp-action="Create">
+            <i class="bx bx-plus me-1"></i> New Calculation Batch
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Batch #</th>
+                        <th>Year</th>
+                        <th>Payroll Area</th>
+                        <th>Payroll Process</th>
+                        <th>Seq</th>
+                        <th>Period Dates</th>
+                        <th>Status</th>
+                        <th>Processed</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>#@item.id</strong></td>
+                                <td>@item.year</td>
+                                <td>@(string.IsNullOrEmpty(item.payroll_area_name) ? item.payroll_area_id.ToString() : item.payroll_area_name)</td>
+                                <td>@(string.IsNullOrEmpty(item.payroll_process_name) ? item.payroll_process_id.ToString() : item.payroll_process_name)</td>
+                                <td>@item.sequence</td>
+                                <td>
+                                    @(item.begin_date?.ToString("dd/MM/yyyy") ?? "-") s/d @(item.end_date?.ToString("dd/MM/yyyy") ?? "-")
+                                </td>
+                                <td>
+                                    @if (item.status == "Closed")
+                                    {
+                                        <span class="badge bg-label-success">Completed</span>
+                                    }
+                                    else if (item.status == "Open")
+                                    {
+                                        <span class="badge bg-label-warning">Open (Pending Run)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-info">@item.status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @(item.processed_employee ?? 0) / @(item.total_employee ?? 0)
+                                </td>
+                                <td class="text-center">
+                                    @if (item.status == "Open")
+                                    {
+                                        <form asp-action="RunCalculation" asp-route-id="@item.id" method="post" style="display:inline-block">
+                                            <button type="submit" class="btn btn-sm btn-success me-1" onclick="return confirm('Run time calculation for batch #@item.id?');">
+                                                <i class="bx bx-play"></i> Run
+                                            </button>
+                                        </form>
+                                    }
+                                    <form asp-action="Delete" asp-route-id="@item.id" method="post" style="display:inline-block">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete calculation batch #@item.id?');">
+                                            <i class="bx bx-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-@section scripts{
-
+@section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            App.init();
-            TableManageResponsive.init();
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
         });
     </script>
 }
-

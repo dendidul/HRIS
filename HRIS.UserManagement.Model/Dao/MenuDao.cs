@@ -30,14 +30,14 @@ namespace HRIS.UserManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT id, menu_name, link, icon, parent_id, index, del_flag, controller_name 
+                        SELECT id, menu_name, link, icon, parent_id, index, del_flag 
                         FROM bos_menu 
                         WHERE del_flag = 0 OR del_flag IS NULL 
                         ORDER BY index ASC;";
                     return conn.Query<MenuModel>(sql).ToList();
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 throw;
             }
@@ -50,7 +50,7 @@ namespace HRIS.UserManagement.Model.Dao
                 using (IDbConnection conn = Connection)
                 {
                     const string sql = @"
-                        SELECT id, menu_name, link, icon, parent_id, index, del_flag, controller_name 
+                        SELECT id, menu_name, link, icon, parent_id, index, del_flag 
                         FROM bos_menu 
                         WHERE id = @Id;";
                     return conn.Query<MenuModel>(sql, new { Id = id }).FirstOrDefault();
@@ -70,9 +70,9 @@ namespace HRIS.UserManagement.Model.Dao
                 {
                     const string sql = @"
                         INSERT INTO bos_menu 
-                        (menu_name, link, icon, parent_id, index, controller_name, del_flag)
+                        (menu_name, link, icon, parent_id, index, del_flag)
                         VALUES 
-                        (@menu_name, @link, @icon, @parent_id, @index, @controller_name, 0)
+                        (@menu_name, @link, @icon, @parent_id, @index,, 0)
                         RETURNING *;";
                     return conn.Query<MenuModel>(sql, model).FirstOrDefault();
                 }
@@ -96,7 +96,7 @@ namespace HRIS.UserManagement.Model.Dao
                             icon = @icon,
                             parent_id = @parent_id,
                             index = @index,
-                            controller_name = @controller_name,
+                          
                             del_flag = COALESCE(@del_flag, del_flag)
                         WHERE id = @id
                         RETURNING *;";

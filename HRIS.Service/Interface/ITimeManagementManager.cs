@@ -1,4 +1,4 @@
-﻿using HRIS.General.Model.TimeManagement;
+using HRIS.General.Model.TimeManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,7 +57,17 @@ namespace HRIS.Service.Interface
         OvertimeRequestModel UpdateOvertimeRequest(OvertimeRequestModel model);
         void DeleteOvertimeRequest(int id);
 
+        // Time Calculation
+        IList<TimeCalculationModel> GetAllTimeCalculation();
+        TimeCalculationModel GetTimeCalculation(int id);
+        TimeCalculationModel CreateTimeCalculation(TimeCalculationModel model);
+        TimeCalculationModel UpdateTimeCalculation(TimeCalculationModel model);
+        void DeleteTimeCalculation(int id);
+        void RunTimeCalculation(int id);
 
-
+        // Timesheet
+        IList<TimesheetModel> GetTimesheets(DateTime? fromDate, DateTime? toDate, int? areaId, int? workgroupId, int? employeeId, string unattendanceType);
+        IList<TimesheetModel> GetEmployeeTimesheet(int employeeId, DateTime? fromDate, DateTime? toDate);
+        TimesheetFilterModel GetEmployeeFilterInfo(int employeeId);
     }
 }

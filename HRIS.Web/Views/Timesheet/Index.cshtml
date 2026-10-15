@@ -1,79 +1,203 @@
-﻿
+@model IEnumerable<HRIS.General.Model.TimeManagement.TimesheetModel>
+
 @{
-    ViewData["Title"] = "Timesheet Employee";
+    ViewData["Title"] = "Timesheet Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var filter = ViewBag.Filter as HRIS.General.Model.TimeManagement.TimesheetFilterModel ?? new HRIS.General.Model.TimeManagement.TimesheetFilterModel();
+    var areaList = ViewBag.AreaList as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var workgroupList = ViewBag.WorkgroupList as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var employeeList = ViewBag.EmployeeList as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var unattendanceList = ViewBag.UnattendanceTypeList as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
 }
-<div  class="col-7">
 
-
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            
-            <h4 class="card-title mb-0">Timesheet</h4>
+<!-- Filter Card -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="card-title mb-0">Timesheet Filter</h5>
+            <small class="text-muted">Filter attendance records by typing in searchable dropdowns</small>
         </div>
-        <div class="panel-body col-6 ml-3">
-            <div class="row">
-                <div class="col-8">
-                    <label>From</label>
-                    @*@Html.TextBoxFor(model => model.area_code, new { Class = "form-control", required = "true" })*@
-                    <input type="text" class="form-control" id="txtFrom" required />
+        <a asp-action="ESSIndex" class="btn btn-outline-primary btn-sm">
+            <i class="bx bx-user me-1"></i> My ESS Timesheet
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="fromDate">From Date</label>
+                    <input type="date" class="form-control" id="fromDate" name="fromDate" value="@(filter.fromDate?.ToString("yyyy-MM-dd"))" />
                 </div>
-              
-                <div class="col-8">
-                    <div class="form-group">
-                        <label>To</label>
-                        <input type="text" class="form-control" id="txtTo" required />
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="toDate">To Date</label>
+                    <input type="date" class="form-control" id="toDate" name="toDate" value="@(filter.toDate?.ToString("yyyy-MM-dd"))" />
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-8">
-                    <label>Area Id</label>
-                    <input type="text" class="form-control" id="txtAreaId" required />
+                <div class="col-md-3">
+                    <label class="form-label" for="AreaId">Personal Area</label>
+                    <select name="AreaId" id="AreaId" class="select2 form-select" data-placeholder="-- All Areas (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in areaList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.AreaId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-8">
-                    <label>Workgroup Id</label>
-                    <input type="text" class="form-control" id="txtWorkgroupId" required />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-8">
-                    <label>Employee Id</label>
-                    <input type="text" class="form-control" id="txtEmployeeId" required />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-8">
-                    <label>Unattendance Type</label>
-                    <input type="text" class="form-control" id="txtUnattendanceType" required />
-                </div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-6">
-                    <button type="submit" class="btn btn-success">Search</button>
-                    @*<a href="@Url.Action("Index","Area")" class="btn btn-warning">Cancel</a>*@
+                <div class="col-md-3">
+                    <label class="form-label" for="WorkGroupId">Workgroup</label>
+                    <select name="WorkGroupId" id="WorkGroupId" class="select2 form-select" data-placeholder="-- All Workgroups (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in workgroupList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.WorkGroupId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
                 </div>
             </div>
 
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label" for="EmployeeId">Employee</label>
+                    <select name="EmployeeId" id="EmployeeId" class="select2 form-select" data-placeholder="-- All Employees (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in employeeList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.EmployeeId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="UnattendanceType">Unattendance Type</label>
+                    <select name="UnattendanceType" id="UnattendanceType" class="select2 form-select" data-placeholder="-- All Unattendance Types (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in unattendanceList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.UnattendanceType ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
 
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-search me-1"></i> Search Timesheet
+                </button>
+                <a href="@Url.Action("Index", "Timesheet")" class="btn btn-outline-secondary">
+                    <i class="bx bx-reset me-1"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-
-
+<!-- Results Card -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Timesheet Records</h5>
+        <span class="badge bg-label-primary">@(Model?.Count() ?? 0) Records Found</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>NIK</th>
+                        <th>Employee Name</th>
+                        <th>Date</th>
+                        <th>Schedule In</th>
+                        <th>Actual In</th>
+                        <th>Dev In</th>
+                        <th>Schedule Out</th>
+                        <th>Actual Out</th>
+                        <th>Dev Out</th>
+                        <th>Duration</th>
+                        <th>Unattendance</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@(string.IsNullOrEmpty(item.NIK) ? item.employee_id.ToString() : item.NIK)</strong></td>
+                                <td>@(string.IsNullOrEmpty(item.employee_name) ? "-" : item.employee_name)</td>
+                                <td>@(item.transaction_date?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td>@(item.time_sch_in?.ToString("HH:mm") ?? "-")</td>
+                                <td>
+                                    @if (item.time_in.HasValue)
+                                    {
+                                        <span class="text-success fw-bold">@item.time_in.Value.ToString("HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_dev_in) && item.time_dev_in != "00:00")
+                                    {
+                                        <span class="badge bg-label-warning">@item.time_dev_in</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">00:00</span>
+                                    }
+                                </td>
+                                <td>@(item.time_sch_out?.ToString("HH:mm") ?? "-")</td>
+                                <td>
+                                    @if (item.time_out.HasValue)
+                                    {
+                                        <span class="text-primary fw-bold">@item.time_out.Value.ToString("HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_dev_out) && item.time_dev_out != "00:00")
+                                    {
+                                        <span class="badge bg-label-info">@item.time_dev_out</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">00:00</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(item.emp_duration) ? "-" : item.emp_duration)</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.unattendance_type))
+                                    {
+                                        <span class="badge bg-label-danger">@item.unattendance_type</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-success">Present</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-
-@section scripts{
-
+@section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            App.init();
-            TableManageResponsive.init();
+            $('.select2').select2({
+                placeholder: function () {
+                    return $(this).data('placeholder') || '-- Select --';
+                },
+                allowClear: true,
+                width: '100%'
+            });
+
+            if (typeof TableManageResponsive !== 'undefined') {
+                TableManageResponsive.init();
+            }
         });
     </script>
 }
-

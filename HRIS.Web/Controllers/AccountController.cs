@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +61,10 @@ namespace HRIS.Web.Controllers
                 HelperController.SetCookie("UserId", checkdata != null ? checkdata.id.ToString() : "");
                 HelperController.SetCookie("UserName", checkdata != null ? checkdata.username.ToString() : "");
                 HelperController.SetCookie("Role_ID", checkdata != null ? checkdata.role_id.ToString() : "");
+                if (checkdata != null && checkdata.status_employee_id.HasValue)
+                {
+                    HelperController.SetCookie("StatusEmployeeID", checkdata.status_employee_id.Value.ToString());
+                }
 
                 return Json(new { User = "Valid", RoleId = checkdata.role_id });
             }
@@ -82,6 +86,7 @@ namespace HRIS.Web.Controllers
                 HelperController.RemoveCookie("UserId");
                 HelperController.RemoveCookie("UserName");
                 HelperController.RemoveCookie("Role_ID");
+                HelperController.RemoveCookie("StatusEmployeeID");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null;
 
     var Title = ViewData["Title"];
@@ -49,6 +49,7 @@
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
     <link rel="stylesheet" href="~/assets/selectpicker/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="~/sneat/vendor/libs/select2/select2.css" />
 
     <!-- Helpers -->
     <script src="~/sneat/vendor/js/helpers.js"></script>
@@ -279,6 +280,12 @@
                                         </a>
                                     </li>
                                     <li>
+                                        <a class="dropdown-item" href="@Url.Action("IndexEmployee", "Employee")">
+                                            <i class="bx bx-user me-2"></i>
+                                            <span class="align-middle">My Profile</span>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
@@ -348,6 +355,7 @@
     <script src="~/assets/plugins/bootstrap-daterangepicker/moment.js"></script>
     <script src="~/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <script src="~/assets/selectpicker/bootstrap-select.min.js"></script>
+    <script src="~/sneat/vendor/libs/select2/select2.js"></script>
 
     <!-- Main JS -->
     <script src="~/sneat/js/main.js"></script>
@@ -483,6 +491,20 @@
             if ($.fn.datetimepicker) {
                 $('.datetimepicker').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm:ss'
+                });
+            }
+
+            // Select2 searchable dropdown auto-initialization
+            if ($.fn.select2) {
+                $('.select2').each(function () {
+                    var $this = $(this);
+                    if (!$this.hasClass('select2-hidden-accessible')) {
+                        $this.select2({
+                            placeholder: $this.attr('placeholder') || $this.data('placeholder') || '-- Select --',
+                            allowClear: Boolean($this.data('allow-clear')),
+                            width: '100%'
+                        });
+                    }
                 });
             }
         });

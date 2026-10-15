@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,6 +35,31 @@ namespace HRIS.Web.Controllers.PersonalAdmin
         public IActionResult Index()
         {
             var data = _personalAdminManager.GetAllPeople();
+            return View(data);
+        }
+
+        public IActionResult IndexEmployee()
+        {
+            var cookieEmpId = _helperController.GetCookie("StatusEmployeeID");
+            if (string.IsNullOrEmpty(cookieEmpId) || !int.TryParse(cookieEmpId, out int employeeId) || employeeId <= 0)
+            {
+                var userId = _helperController.GetCookie("UserId");
+                if (string.IsNullOrEmpty(userId) || userId == "0")
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                TempData["ErrorMessage"] = "Akun Anda tidak terhubung dengan data karyawan (ESS Profile).";
+                return RedirectToAction("Dashboard", "Home");
+            }
+
+            var data = _personalAdminManager.GetEmployeeDetail(employeeId);
+            if (data == null || data.People == null || data.People.id == 0)
+            {
+                TempData["ErrorMessage"] = "Data profil karyawan tidak ditemukan.";
+                return RedirectToAction("Dashboard", "Home");
+            }
+
             return View(data);
         }
 

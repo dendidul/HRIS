@@ -59,6 +59,18 @@ namespace HRIS.PersonalAdmin.Model.Dao
                 {
                     var vm = new EmployeeAttributeViewModel();
 
+                    // Resolve peopleId: check if passed id is peopleId or status_employee_id (pay attributes id)
+                    int resolvedPeopleId = peopleId;
+                    var existsInPeople = conn.QueryFirstOrDefault<int?>("SELECT id FROM bos_people WHERE id = @peopleId LIMIT 1;", new { peopleId });
+                    if (!existsInPeople.HasValue)
+                    {
+                        var payAttrPeopleId = conn.QueryFirstOrDefault<int?>("SELECT people_id FROM bos_employee_pay_attributes WHERE id = @peopleId LIMIT 1;", new { peopleId });
+                        if (payAttrPeopleId.HasValue)
+                        {
+                            resolvedPeopleId = payAttrPeopleId.Value;
+                        }
+                    }
+
                     // 1. People
                     const string sqlPeople = @"
                         SELECT id, person_code, first_name, middle_name, last_name, 
@@ -67,8 +79,8 @@ namespace HRIS.PersonalAdmin.Model.Dao
                                begin_year, end_year, grade, max_grade, 
                                created_by, created_date, modified_by, modified_date
                         FROM bos_people 
-                        WHERE id = @peopleId;";
-                    vm.People = conn.Query<PeopleModel>(sqlPeople, new { peopleId }).FirstOrDefault() ?? new PeopleModel();
+                        WHERE id = @resolvedPeopleId;";
+                    vm.People = conn.Query<PeopleModel>(sqlPeople, new { resolvedPeopleId }).FirstOrDefault() ?? new PeopleModel();
 
                     // 2. Employee Pay Attributes
                     const string sqlAttr = @"
@@ -83,9 +95,9 @@ namespace HRIS.PersonalAdmin.Model.Dao
                                level_grade_desc, employee_grade_desc, cost_center_desc, 
                                bank_source_desc, status_employee, hire_date, terminate_date
                         FROM bos_employee_pay_attributes 
-                        WHERE people_id = @peopleId AND (flag_delete = 0 OR flag_delete IS NULL)
+                        WHERE people_id = @resolvedPeopleId AND (flag_delete = 0 OR flag_delete IS NULL)
                         ORDER BY id DESC LIMIT 1;";
-                    vm.EmployeeAttributes = conn.Query<EmployeeAttributesModel>(sqlAttr, new { peopleId }).FirstOrDefault() ?? new EmployeeAttributesModel();
+                    vm.EmployeeAttributes = conn.Query<EmployeeAttributesModel>(sqlAttr, new { resolvedPeopleId }).FirstOrDefault() ?? new EmployeeAttributesModel();
 
                     int empAttrId = vm.EmployeeAttributes.id;
 
@@ -118,7 +130,7 @@ namespace HRIS.PersonalAdmin.Model.Dao
 
                         // 6. Address
                         const string sqlAddr = @"
-                            SELECT id, employee_id, ""AddressType"", address_employee AS ""Address"", ""Telp""
+                            SELECT id, employee_id, ""AddressType"", ""Address"", ""Telp""
                             FROM bos_employee_address 
                             WHERE employee_id = @empAttrId AND (del_flag = 0 OR del_flag IS NULL);";
                         vm.AddressList = conn.Query<EmployeeBankAddressModel>(sqlAddr, new { empAttrId }).ToList();
@@ -132,14 +144,15 @@ namespace HRIS.PersonalAdmin.Model.Dao
 
                         // 8. Quotas
                         const string sqlQuota = @"
-                            SELECT q.id, q.status_employee_id, q.unattendance_id, q.quota, q.begdt, q.enddt,
+                            SELECT q.id, q.status_employee_id, q.unattendance_id, q.quota, 
+                                   q.begdt AS begin_date, q.enddt AS end_date,
                                    u.short_desc AS ""UnattendanceCode""
                             FROM bos_employee_quota q
                             LEFT JOIN bos_unattendances u ON q.unattendance_id = u.id
                             WHERE q.status_employee_id = @empAttrId AND (q.flag_delete = 0 OR q.flag_delete IS NULL);";
                         vm.QuotesList = conn.Query<EmployeeQuotaModel>(sqlQuota, new { empAttrId }).ToList();
 
-                        // 9. Workgroup & KPP desc
+                        // 9. Workgroup & KPP & Supervisor & TaxStatus desc
                         if (vm.EmpTime?.workgroup_id != null && vm.EmpTime.workgroup_id > 0)
                         {
                             vm.WorkgroupName = conn.Query<string>("SELECT short_desc FROM bos_workgroups WHERE id = @wId;", new { wId = vm.EmpTime.workgroup_id }).FirstOrDefault() ?? "";
@@ -147,6 +160,18 @@ namespace HRIS.PersonalAdmin.Model.Dao
                         if (vm.EmpTax?.tax_service_office_id != null && vm.EmpTax.tax_service_office_id > 0)
                         {
                             vm.Kpp = conn.Query<string>("SELECT tax_office_code FROM bos_tax_service_offices WHERE id = @tsoId;", new { tsoId = vm.EmpTax.tax_service_office_id }).FirstOrDefault() ?? "";
+                        }
+                        if (vm.EmpTax?.tax_status_id != null && vm.EmpTax.tax_status_id > 0)
+                        {
+                            vm.TaxStatus = conn.Query<string>("SELECT tax_status_id FROM bos_tax_statuses WHERE id = @tsId;", new { tsId = vm.EmpTax.tax_status_id }).FirstOrDefault() ?? "";
+                        }
+                        if (!string.IsNullOrEmpty(vm.EmployeeAttributes?.supervisor_empid) && int.TryParse(vm.EmployeeAttributes.supervisor_empid, out int supId) && supId > 0)
+                        {
+                            const string sqlSup = @"
+                                SELECT TRIM(CONCAT(COALESCE(first_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(last_name, '')))
+                                FROM bos_people 
+                                WHERE id = @supId;";
+                            vm.SupervisorName = conn.Query<string>(sqlSup, new { supId }).FirstOrDefault() ?? "";
                         }
                     }
 

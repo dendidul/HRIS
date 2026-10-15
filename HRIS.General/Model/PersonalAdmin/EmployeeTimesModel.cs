@@ -10,13 +10,13 @@ namespace HRIS.General.Model.PersonalAdmin
 
         public int workgroup_id { get; set; }
 
-        public DateTime? starting_date { get; set; }
+        public DateOnly? starting_date { get; set; }
 
         public int? start_seq { get; set; }
 
-        public DateTime? begin_date { get; set; }
+        public DateOnly? begin_date { get; set; }
 
-        public DateTime? end_date { get; set; }
+        public DateOnly? end_date { get; set; }
 
         public int employee_id { get; set; }
 

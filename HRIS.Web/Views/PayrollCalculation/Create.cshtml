@@ -24,8 +24,8 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="payroll_area_id">Payroll Area</label>
-                    <select name="payroll_area_id" class="form-select" required>
-                        <option value="">-- Select Area --</option>
+                    <select name="payroll_area_id" id="payroll_area_id" class="select2 form-select" data-placeholder="-- Select Area --" data-allow-clear="true" required>
+                        <option value=""></option>
                         @foreach (var a in areas)
                         {
                             <option value="@a.id">@a.payroll_area_id - @a.short_desc</option>
@@ -34,8 +34,8 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="payroll_process_id">Payroll Process</label>
-                    <select name="payroll_process_id" class="form-select" required>
-                        <option value="">-- Select Process --</option>
+                    <select name="payroll_process_id" id="payroll_process_id" class="select2 form-select" data-placeholder="-- Select Process --" data-allow-clear="true" required>
+                        <option value=""></option>
                         @foreach (var p in processes)
                         {
                             <option value="@p.id">@p.payroll_process_id - @p.short_desc</option>
@@ -44,8 +44,8 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="payroll_periode_id">Payroll Period</label>
-                    <select name="payroll_periode_id" class="form-select">
-                        <option value="">-- Select Period --</option>
+                    <select name="payroll_periode_id" id="payroll_periode_id" class="select2 form-select" data-placeholder="-- Select Period --" data-allow-clear="true">
+                        <option value=""></option>
                         @foreach (var per in periods)
                         {
                             <option value="@per.id">@per.payroll_periode_id - @per.short_desc</option>
@@ -73,4 +73,18 @@
             </div>
         </div>
     </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: function () {
+                    return $(this).data('placeholder') || '-- Select --';
+                },
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
 }
