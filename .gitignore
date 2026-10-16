@@ -78,6 +78,9 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *.log
+*Log_*.txt
+DaoLog*.txt
+Log/
 *.vspscc
 *.vssscc
 .builds
