@@ -56,6 +56,7 @@ namespace HRIS.Service.Interface
         OvertimeRequestModel CreateOvertimeRequest(OvertimeRequestModel model);
         OvertimeRequestModel UpdateOvertimeRequest(OvertimeRequestModel model);
         void DeleteOvertimeRequest(int id);
+        IList<EmployeeOvertimeModel> GetEmployeeOvertimes(DateTime? fromDate, DateTime? toDate, int? areaId, int? workgroupId, int? employeeId);
 
         // Time Calculation
         IList<TimeCalculationModel> GetAllTimeCalculation();

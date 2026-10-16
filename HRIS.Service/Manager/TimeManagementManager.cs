@@ -23,6 +23,7 @@ namespace HRIS.Service.Manager
         private readonly OvertimeReqDao OvertimeReqDao;
         private readonly TimeCalculationDao TimeCalculationDao;
         private readonly TimesheetDao TimesheetDao;
+        private readonly EmployeeOvertimeDao EmployeeOvertimeDao;
 
         public TimeManagementManager(IConfiguration _config)
         {
@@ -38,6 +39,7 @@ namespace HRIS.Service.Manager
             this.OvertimeReqDao = new OvertimeReqDao(_config);
             this.TimeCalculationDao = new TimeCalculationDao(_config);
             this.TimesheetDao = new TimesheetDao(_config);
+            this.EmployeeOvertimeDao = new EmployeeOvertimeDao(_config);
         }
 
         public string DestinationLogFolder()
@@ -745,6 +747,19 @@ namespace HRIS.Service.Manager
             {
                 _logger.WriteFunctionLog(DestinationLogFolder(), "", "DeleteOvertimeRequest", ex.Message, "Service");
 
+            }
+        }
+
+        public IList<EmployeeOvertimeModel> GetEmployeeOvertimes(DateTime? fromDate, DateTime? toDate, int? areaId, int? workgroupId, int? employeeId)
+        {
+            try
+            {
+                return EmployeeOvertimeDao.GetEmployeeOvertimes(fromDate, toDate, areaId, workgroupId, employeeId);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteFunctionLog(DestinationLogFolder(), "", "GetEmployeeOvertimes", ex.Message, "Service");
+                return new List<EmployeeOvertimeModel>();
             }
         }
 

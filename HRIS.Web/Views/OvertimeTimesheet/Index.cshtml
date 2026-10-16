@@ -4,56 +4,198 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bx bx-calendar-check me-2"></i> Overtime Timesheet Filter
-                </h5>
+@model IEnumerable<HRIS.General.Model.TimeManagement.EmployeeOvertimeModel>
+
+@{
+    ViewData["Title"] = "Overtime Timesheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var filter = ViewBag.Filter as HRIS.General.Model.TimeManagement.TimesheetFilterModel ?? new HRIS.General.Model.TimeManagement.TimesheetFilterModel();
+    var areaList = ViewBag.AreaList as SelectList ?? new SelectList(new List<SelectListItem>());
+    var workgroupList = ViewBag.WorkgroupList as SelectList ?? new SelectList(new List<SelectListItem>());
+    var employeeList = ViewBag.EmployeeList as SelectList ?? new SelectList(new List<SelectListItem>());
+}
+
+<!-- Filter Card -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="card-title mb-0">
+                <i class="bx bx-calendar-check me-2"></i> Overtime Timesheet Filter
+            </h5>
+            <small class="text-muted">Filter overtime records by date range, area, workgroup, or employee</small>
+        </div>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="fromDate">From Date</label>
+                    <input type="date" class="form-control" id="fromDate" name="fromDate" value="@(filter.fromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="toDate">To Date</label>
+                    <input type="date" class="form-control" id="toDate" name="toDate" value="@(filter.toDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="AreaId">Personal Area</label>
+                    <select name="AreaId" id="AreaId" class="select2 form-select" data-placeholder="-- All Areas (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in areaList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.AreaId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="WorkGroupId">Workgroup / Shift</label>
+                    <select name="WorkGroupId" id="WorkGroupId" class="select2 form-select" data-placeholder="-- All Workgroups (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in workgroupList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.WorkGroupId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
+                </div>
             </div>
-            <div class="card-body">
-                <form id="formOvertimeTimesheet">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="txtFrom">Period From <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="txtFrom" value="@DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd")" required />
-                        </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label" for="txtTo">Period To <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="txtTo" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="ddlArea">Area</label>
-                            <select id="ddlArea" asp-items="ViewBag.AreaList" class="form-select select2" data-placeholder="-- All Areas --">
-                                <option value="">-- All Areas --</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="ddlWorkgroup">Workgroup / Shift</label>
-                            <select id="ddlWorkgroup" asp-items="ViewBag.WorkgroupList" class="form-select select2" data-placeholder="-- All Workgroups --">
-                                <option value="">-- All Workgroups --</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label class="form-label" for="ddlEmployee">Employee</label>
-                            <select id="ddlEmployee" asp-items="ViewBag.EmployeeList" class="form-select select2" data-placeholder="-- All Employees --">
-                                <option value="">-- All Employees --</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bx bx-search me-1"></i> Search Timesheet
-                        </button>
-                    </div>
-                </form>
+            <div class="row g-3 mb-4">
+                <div class="col-md-12">
+                    <label class="form-label" for="EmployeeId">Employee</label>
+                    <select name="EmployeeId" id="EmployeeId" class="select2 form-select" data-placeholder="-- All Employees (Type to search) --" data-allow-clear="true">
+                        <option value=""></option>
+                        @foreach (var item in employeeList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == filter.EmployeeId?.ToString() ? "selected" : null)">@item.Text</option>
+                        }
+                    </select>
+                </div>
             </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-search me-1"></i> Search Timesheet
+                </button>
+                <a href="@Url.Action("Index", "OvertimeTimesheet")" class="btn btn-outline-secondary">
+                    <i class="bx bx-reset me-1"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Card -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Overtime Records</h5>
+        <span class="badge bg-label-primary">@(Model?.Count() ?? 0) Records Found</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-striped" id="data-table-responsive" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>NIK</th>
+                        <th>Employee Name</th>
+                        <th>Workgroup</th>
+                        <th>Date</th>
+                        <th>Schedule</th>
+                        <th>Req Begin</th>
+                        <th>Req End</th>
+                        <th>Actual In</th>
+                        <th>Actual Out</th>
+                        <th>Overtime Dur</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@(string.IsNullOrEmpty(item.NIK) ? item.status_employee_id?.ToString() ?? "-" : item.NIK)</strong></td>
+                                <td>@(string.IsNullOrEmpty(item.EmployeeName) ? "-" : item.EmployeeName)</td>
+                                <td>@(string.IsNullOrEmpty(item.WorkgroupName) ? "-" : item.WorkgroupName)</td>
+                                <td>@(item.transaction_date?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.sch_in) || !string.IsNullOrEmpty(item.sch_out))
+                                    {
+                                        <span>@(item.sch_in ?? "00:00") - @(item.sch_out ?? "00:00")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.request_begin))
+                                    {
+                                        <span class="fw-semibold">@item.request_begin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.request_end))
+                                    {
+                                        <span class="fw-semibold">@item.request_end</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_in))
+                                    {
+                                        <span class="text-success fw-bold">@item.time_in</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.time_out))
+                                    {
+                                        <span class="text-danger fw-bold">@item.time_out</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.overtime_duration))
+                                    {
+                                        <span class="badge bg-label-info">@item.overtime_duration</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.request_approval == "Approved")
+                                    {
+                                        <span class="badge bg-label-success">Approved</span>
+                                    }
+                                    else if (item.request_approval == "Rejected")
+                                    {
+                                        <span class="badge bg-label-danger">Rejected</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-warning">@(item.request_approval ?? "Open")</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -69,6 +211,15 @@
                     },
                     allowClear: true
                 });
+            }
+
+            if ($.fn.DataTable && $('#data-table-responsive').length) {
+                if (!$.fn.DataTable.isDataTable('#data-table-responsive')) {
+                    $('#data-table-responsive').DataTable({
+                        responsive: true,
+                        order: [[3, 'desc']]
+                    });
+                }
             }
         });
     </script>

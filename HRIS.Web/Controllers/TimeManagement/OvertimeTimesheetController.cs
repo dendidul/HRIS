@@ -26,7 +26,7 @@ namespace HRIS.Web.Controllers.TimeManagement
             this._helperController = new HelperController(config, cookie);
         }
 
-        public IActionResult Index()
+        private void PopulateDropdowns(int? selectedAreaId = null, int? selectedWorkgroupId = null, int? selectedEmployeeId = null)
         {
             try
             {
@@ -34,19 +34,19 @@ namespace HRIS.Web.Controllers.TimeManagement
                 ViewBag.AreaList = new SelectList(areas.Select(a => new {
                     id = a.id,
                     display = string.IsNullOrEmpty(a.short_desc) ? a.area_code : $"{a.area_code} - {a.short_desc}"
-                }), "id", "display");
+                }), "id", "display", selectedAreaId);
 
                 var workgroups = _timeManagementManager.GetAllWorkgroup() ?? new List<HRIS.General.Model.TimeManagement.WorkGroupModel>();
                 ViewBag.WorkgroupList = new SelectList(workgroups.Select(w => new {
                     id = w.id,
                     display = string.IsNullOrEmpty(w.short_desc) ? w.workgroup_id : $"{w.workgroup_id} - {w.short_desc}"
-                }), "id", "display");
+                }), "id", "display", selectedWorkgroupId);
 
                 var people = _personalAdminManager.GetAllPeople() ?? new List<HRIS.General.Model.PersonalAdmin.PeopleModel>();
                 ViewBag.EmployeeList = new SelectList(people.Select(p => new {
                     id = p.id,
                     display = $"[{p.nik ?? p.person_code}] {p.first_name} {p.middle_name} {p.last_name}".Trim()
-                }), "id", "display");
+                }), "id", "display", selectedEmployeeId);
             }
             catch (Exception)
             {
@@ -54,8 +54,24 @@ namespace HRIS.Web.Controllers.TimeManagement
                 ViewBag.WorkgroupList = new SelectList(new List<SelectListItem>());
                 ViewBag.EmployeeList = new SelectList(new List<SelectListItem>());
             }
+        }
 
-            return View();
+        public IActionResult Index(HRIS.General.Model.TimeManagement.TimesheetFilterModel filter)
+        {
+            filter.fromDate ??= DateTime.Today.AddDays(-30);
+            filter.toDate ??= DateTime.Today;
+
+            PopulateDropdowns(filter.AreaId, filter.WorkGroupId, filter.EmployeeId);
+
+            var overtimes = _timeManagementManager.GetEmployeeOvertimes(
+                filter.fromDate,
+                filter.toDate,
+                filter.AreaId,
+                filter.WorkGroupId,
+                filter.EmployeeId);
+
+            ViewBag.Filter = filter;
+            return View(overtimes);
         }
     }
 }

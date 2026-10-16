@@ -38,5 +38,14 @@ namespace HRIS.General.Model.TimeManagement
 
         public short? del_flag { get; set; }
 
+        public string NIK { get; set; }
+
+        public string EmployeeName { get; set; }
+
+        public string WorkgroupName { get; set; }
+
+        public string sch_in { get; set; }
+
+        public string sch_out { get; set; }
     }
 }
