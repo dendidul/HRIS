@@ -63,20 +63,34 @@
                     </td>
                     <td>
                         @{
-                            if (item.created_date.HasValue)
+                            var displayDate = item.overtime_date ?? item.created_date;
+                            if (displayDate.HasValue)
                             {
-                                <label> @item.created_date.Value.ToString("dd-MM-yyyy")</label>
+                                <span>@displayDate.Value.ToString("dd-MM-yyyy")</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
                             }
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.UnitCode)
-
+                        @(string.IsNullOrEmpty(item.UnitCode) ? "-" : item.UnitCode)
                     </td>
                  
                     <td>
-                        @Html.DisplayFor(modelItem => item.request_status)
-
+                        @if (item.request_status == "Approved")
+                        {
+                            <span class="badge bg-label-success">Approved</span>
+                        }
+                        else if (item.request_status == "Rejected")
+                        {
+                            <span class="badge bg-label-danger">Rejected</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-label-warning">@(item.request_status ?? "Open")</span>
+                        }
                     </td>
 
                     <td>

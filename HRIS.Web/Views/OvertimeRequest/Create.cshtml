@@ -1,8 +1,117 @@
-﻿
+﻿@model HRIS.General.Model.TimeManagement.OvertimeRequestModel
+
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Overtime Request";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bx bx-time me-2"></i> Create Overtime Request
+                </h5>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bx bx-arrow-back me-1"></i> Back to List
+                </a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
+                    <div class="row g-3">
+                        <!-- Document Number -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="doc_number">Document Number <span class="text-danger">*</span></label>
+                            <input asp-for="doc_number" class="form-control" readonly placeholder="Auto-generated document number" />
+                            <span asp-validation-for="doc_number" class="text-danger"></span>
+                        </div>
+
+                        <!-- Overtime Date -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="overtime_date">Overtime Date <span class="text-danger">*</span></label>
+                            <input asp-for="overtime_date" type="date" class="form-control" required />
+                            <span asp-validation-for="overtime_date" class="text-danger"></span>
+                        </div>
+
+                        <!-- Unit (Searchable Dropdown) -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="unit_id">Unit / Department <span class="text-danger">*</span></label>
+                            <select asp-for="unit_id" asp-items="ViewBag.UnitList" class="form-select select2" data-placeholder="-- Search Unit --" required>
+                                <option value="">-- Search Unit --</option>
+                            </select>
+                            <span asp-validation-for="unit_id" class="text-danger"></span>
+                        </div>
+
+                        <!-- Employee (Searchable Dropdown) -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="employee_id">Employee <span class="text-danger">*</span></label>
+                            <select asp-for="employee_id" asp-items="ViewBag.EmployeeList" class="form-select select2" data-placeholder="-- Search Employee (NIK / Name) --" required>
+                                <option value="">-- Search Employee (NIK / Name) --</option>
+                            </select>
+                            <span asp-validation-for="employee_id" class="text-danger"></span>
+                        </div>
+
+                        <!-- Overtime Begin -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="overtime_begin">Overtime Begin Time</label>
+                            <input asp-for="overtime_begin" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="overtime_begin" class="text-danger"></span>
+                        </div>
+
+                        <!-- Overtime End -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="overtime_end">Overtime End Time</label>
+                            <input asp-for="overtime_end" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="overtime_end" class="text-danger"></span>
+                        </div>
+
+                        <!-- Reason / Description -->
+                        <div class="col-md-12">
+                            <label class="form-label" asp-for="description">Reason / Job Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="description" class="form-control" rows="3" placeholder="Enter reason or work description for this overtime request..." required></textarea>
+                            <span asp-validation-for="description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6">
+                            <label class="form-label" asp-for="request_status">Request Status</label>
+                            <select asp-for="request_status" class="form-select">
+                                <option value="Open">Open</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bx bx-arrow-back me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bx bx-save me-1"></i> Save Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ($.fn.select2) {
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: function () {
+                        return $(this).data('placeholder') || '-- Select --';
+                    },
+                    allowClear: true
+                });
+            }
+        });
+    </script>
+}

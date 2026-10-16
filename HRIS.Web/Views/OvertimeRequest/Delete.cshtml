@@ -1,8 +1,55 @@
-﻿
+﻿@model HRIS.General.Model.TimeManagement.OvertimeRequestModel
+
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Overtime Request";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card mb-4 border-danger">
+            <div class="card-header bg-label-danger">
+                <h5 class="card-title text-danger mb-0">
+                    <i class="bx bx-error-circle me-1"></i> Confirm Delete Overtime Request
+                </h5>
+            </div>
+            <div class="card-body pt-4">
+                <p class="lead">Are you sure you want to delete this overtime request?</p>
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> Deleting document <strong>@Model.doc_number</strong> will remove this overtime request and its associated details.
+                </div>
 
+                <dl class="row mt-3">
+                    <dt class="col-sm-4 text-muted">Doc Number</dt>
+                    <dd class="col-sm-8 font-weight-bold">@Model.doc_number</dd>
+
+                    <dt class="col-sm-4 text-muted">Employee</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.NIK) ? "" : $"[{Model.NIK}] " )@Model.EmployeeName</dd>
+
+                    <dt class="col-sm-4 text-muted">Unit</dt>
+                    <dd class="col-sm-8">@Model.UnitCode</dd>
+
+                    <dt class="col-sm-4 text-muted">Overtime Date</dt>
+                    <dd class="col-sm-8">@(Model.overtime_date?.ToString("dd-MM-yyyy") ?? "-")</dd>
+
+                    <dt class="col-sm-4 text-muted">Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-label-secondary">@Model.request_status</span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer d-flex justify-content-between border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bx bx-arrow-back me-1"></i> Cancel
+                </a>
+                <form asp-action="DeleteConfirmed" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bx bx-trash me-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

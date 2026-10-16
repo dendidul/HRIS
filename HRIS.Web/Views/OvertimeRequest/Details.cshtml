@@ -1,8 +1,95 @@
-﻿
+﻿@model HRIS.General.Model.TimeManagement.OvertimeRequestModel
+
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Overtime Request Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bx bx-file me-2"></i> Overtime Request Details
+                </h5>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-primary btn-sm me-1">
+                        <i class="bx bx-edit-alt me-1"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        <i class="bx bx-arrow-back me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-lighter rounded">
+                    <div>
+                        <span class="text-muted d-block small">DOCUMENT NUMBER</span>
+                        <h4 class="mb-0 text-primary">@Model.doc_number</h4>
+                    </div>
+                    <div>
+                        @if (Model.request_status == "Approved")
+                        {
+                            <span class="badge bg-label-success fs-6"><i class="bx bx-check-circle me-1"></i> Approved</span>
+                        }
+                        else if (Model.request_status == "Rejected")
+                        {
+                            <span class="badge bg-label-danger fs-6"><i class="bx bx-x-circle me-1"></i> Rejected</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-label-warning fs-6"><i class="bx bx-time-five me-1"></i> @(Model.request_status ?? "Open")</span>
+                        }
+                    </div>
+                </div>
 
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">EMPLOYEE</span>
+                        <strong>@(string.IsNullOrEmpty(Model.NIK) ? "-" : $"[{Model.NIK}]")} @Model.EmployeeName</strong>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">UNIT / DEPARTMENT</span>
+                        <strong>@(string.IsNullOrEmpty(Model.UnitCode) ? "-" : Model.UnitCode) @(string.IsNullOrEmpty(Model.UnitName) ? "" : $"- {Model.UnitName}")</strong>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">OVERTIME DATE</span>
+                        <strong>@(Model.overtime_date?.ToString("dd MMMM yyyy") ?? "-")</strong>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">CREATED DATE</span>
+                        <strong>@(Model.created_date?.ToString("dd-MM-yyyy HH:mm") ?? "-")</strong>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">OVERTIME BEGIN</span>
+                        <strong>@(Model.overtime_begin?.ToString("dd MMMM yyyy HH:mm") ?? "-")</strong>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block small">OVERTIME END</span>
+                        <strong>@(Model.overtime_end?.ToString("dd MMMM yyyy HH:mm") ?? "-")</strong>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <span class="text-muted d-block small">REASON / DESCRIPTION</span>
+                        <div class="p-3 bg-light rounded mt-1">
+                            @(string.IsNullOrEmpty(Model.description) ? "No reason specified." : Model.description)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bx bx-arrow-back me-1"></i> Back to List
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-primary">
+                    <i class="bx bx-edit-alt me-1"></i> Edit Request
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

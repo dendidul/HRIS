@@ -16,6 +16,14 @@ namespace HRIS.General.Model.TimeManagement
 
         public string description { get; set; }
 
+        public DateTime? overtime_date { get; set; }
+
+        public DateTime? overtime_begin { get; set; }
+
+        public DateTime? overtime_end { get; set; }
+
+        public short? approved { get; set; }
+
         public DateTime? created_date { get; set; }
 
         public string created_by { get; set; }
@@ -32,5 +40,6 @@ namespace HRIS.General.Model.TimeManagement
 
         public string EmployeeName { get; set; }
         public string UnitCode { get; set; }
+        public string UnitName { get; set; }
     }
 }
