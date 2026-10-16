@@ -43,8 +43,8 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="~/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
     <link rel="stylesheet" href="~/sneat/vendor/libs/apex-charts/apex-charts.css" />
-    <link rel="stylesheet" href="~/assets/plugins/DataTables/media/css/dataTables.bootstrap4.min.css" />
-    <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/DataTables/media/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/assets/plugins/gritter/css/jquery.gritter.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
@@ -102,39 +102,65 @@
         }
 
         /* Sneat Bootstrap 5 DataTables styling bridge */
+        .dataTables_wrapper .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter {
-            margin-bottom: 1rem;
+            padding: 0.5rem 0 1rem 0;
         }
-        .dataTables_wrapper .dataTables_length select {
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #697a8d;
+            margin-bottom: 0;
+        }
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .form-select-sm {
             border: 1px solid #d9dee3;
             border-radius: 0.375rem;
-            padding: 0.35rem 1.8rem 0.35rem 0.75rem;
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
             margin: 0 0.5rem;
             color: #697a8d;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            background-color: #fff;
         }
-        .dataTables_wrapper .dataTables_filter input {
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .form-control-sm {
             border: 1px solid #d9dee3;
             border-radius: 0.375rem;
-            padding: 0.35rem 0.75rem;
+            padding: 0.375rem 0.75rem;
             margin-left: 0.5rem;
             color: #697a8d;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            background-color: #fff;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .dataTables_wrapper .dataTables_filter input:focus,
+        .dataTables_wrapper .dataTables_length select:focus {
+            border-color: #696cff;
+            outline: 0;
+            box-shadow: 0 0 0.25rem 0.05rem rgba(105, 108, 255, 0.25);
         }
         .dataTables_wrapper .dataTables_info {
-            padding-top: 0.85rem;
+            padding-top: 1rem;
             color: #a1acb8;
             font-size: 0.85rem;
         }
         .dataTables_wrapper .dataTables_paginate {
-            margin-top: 0.75rem;
-            text-align: right;
+            padding-top: 0.75rem;
         }
         .dataTables_wrapper .dataTables_paginate ul.pagination {
-            display: inline-flex;
+            display: flex;
+            justify-content: flex-end;
             list-style: none;
             padding: 0;
             margin: 0;
-            border-radius: 0.375rem;
         }
         .dataTables_wrapper .dataTables_paginate .page-item {
             margin: 0 2px;
@@ -146,7 +172,11 @@
             color: #697a8d;
             background-color: #f5f5f9;
             border: 1px solid #d9dee3;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.25rem;
+            height: 2.25rem;
             text-decoration: none;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
@@ -169,40 +199,37 @@
             cursor: not-allowed;
             pointer-events: none;
         }
-        /* Fallback if rendered as plain paginate_button without Bootstrap ul.pagination */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            display: inline-block;
-            box-sizing: border-box;
-            min-width: 1.8em;
-            padding: 0.45rem 0.85rem;
-            margin: 0 2px;
-            text-align: center;
-            text-decoration: none !important;
-            cursor: pointer;
-            color: #697a8d !important;
-            border: 1px solid #d9dee3 !important;
-            border-radius: 0.375rem !important;
-            background: #f5f5f9 !important;
-            font-size: 0.85rem;
+        /* Modern Sneat Table Header & Row Styling */
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0;
+            width: 100% !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 1rem !important;
         }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #e1e4e8 !important;
-            color: #566a7f !important;
-            border-color: #d9dee3 !important;
+        table.dataTable thead th {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #566a7f;
+            background-color: #f5f5f9;
+            border-bottom: 1px solid #d9dee3 !important;
+            padding: 0.625rem 1.25rem;
+            font-weight: 600;
         }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            color: #fff !important;
-            border: 1px solid #696cff !important;
-            background: #696cff !important;
-            box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
+        table.dataTable tbody td {
+            padding: 0.85rem 1.25rem;
+            vertical-align: middle;
+            color: #697a8d;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #d9dee3;
         }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-            color: #c7cdd4 !important;
-            border-color: #e9ecef !important;
-            background: #fcfdfd !important;
-            cursor: not-allowed !important;
+        table.dataTable.table-striped > tbody > tr:nth-of-type(odd) > * {
+            --bs-table-accent-bg: rgba(67, 89, 113, 0.02);
+            color: #697a8d;
+        }
+        table.dataTable.table-hover > tbody > tr:hover > * {
+            --bs-table-accent-bg: rgba(67, 89, 113, 0.04);
         }
     </style>
 </head>
@@ -347,9 +374,9 @@
     <!-- Vendors JS -->
     <script src="~/sneat/vendor/libs/apex-charts/apexcharts.js"></script>
     <script src="~/assets/plugins/DataTables/media/js/jquery.dataTables.js"></script>
-    <script src="~/assets/plugins/DataTables/media/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/assets/plugins/DataTables/media/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-    <script src="~/assets/plugins/DataTables/extensions/Responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Responsive/js/responsive.bootstrap5.min.js"></script>
     <script src="~/assets/plugins/gritter/js/jquery.gritter.js"></script>
     <script src="~/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
     <script src="~/assets/plugins/bootstrap-daterangepicker/moment.js"></script>
