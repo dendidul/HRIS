@@ -45,6 +45,7 @@
     <link rel="stylesheet" href="~/sneat/vendor/libs/apex-charts/apex-charts.css" />
     <link rel="stylesheet" href="~/assets/plugins/DataTables/media/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/DataTables/extensions/Buttons/css/buttons.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/assets/plugins/gritter/css/jquery.gritter.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css" />
     <link rel="stylesheet" href="~/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
@@ -102,6 +103,29 @@
         }
 
         /* Sneat Bootstrap 5 DataTables styling bridge */
+        .dt-buttons .btn {
+            padding: 0.4375rem 0.875rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+        }
+        .dt-button-collection {
+            padding: 0.5rem 0;
+            border: 0 !important;
+            box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.45);
+            border-radius: 0.375rem;
+            background-color: #fff;
+        }
+        .dt-button-collection .dropdown-item {
+            padding: 0.532rem 1.25rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            color: #697a8d;
+        }
+        .dt-button-collection .dropdown-item:hover {
+            background-color: rgba(105, 108, 255, 0.08);
+            color: #696cff;
+        }
         .dataTables_wrapper .row {
             margin-left: 0;
             margin-right: 0;
@@ -377,6 +401,14 @@
     <script src="~/assets/plugins/DataTables/media/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/assets/plugins/DataTables/extensions/Responsive/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/jszip.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/pdfmake.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/vfs_fonts.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/plugins/DataTables/extensions/Buttons/js/buttons.colVis.min.js"></script>
     <script src="~/assets/plugins/gritter/js/jquery.gritter.js"></script>
     <script src="~/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
     <script src="~/assets/plugins/bootstrap-daterangepicker/moment.js"></script>
@@ -399,6 +431,50 @@
             if ($('#data-table-responsive').length !== 0 && !$.fn.DataTable.isDataTable('#data-table-responsive')) {
                 $('#data-table-responsive').DataTable({
                     responsive: true,
+                    dom: '<"row align-items-center mb-3"<"col-md-6 d-flex align-items-center gap-2"lB><"col-md-6"f>><"table-responsive"t><"row align-items-center mt-3"<"col-md-6"i><"col-md-6"p>>',
+                    buttons: [
+                        {
+                            extend: 'collection',
+                            text: '<i class="bx bx-export me-1"></i> Export',
+                            className: 'btn btn-outline-secondary dropdown-toggle me-2',
+                            buttons: [
+                                {
+                                    extend: 'excelHtml5',
+                                    text: '<i class="bx bxs-file-export me-1 text-success"></i> Excel',
+                                    className: 'dropdown-item',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    text: '<i class="bx bx-file me-1 text-info"></i> CSV',
+                                    className: 'dropdown-item',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    text: '<i class="bx bxs-file-pdf me-1 text-danger"></i> PDF',
+                                    className: 'dropdown-item',
+                                    orientation: 'landscape',
+                                    pageSize: 'A4',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                },
+                                {
+                                    extend: 'print',
+                                    text: '<i class="bx bx-printer me-1 text-primary"></i> Print',
+                                    className: 'dropdown-item',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                }
+                            ]
+                        }
+                    ],
                     pageLength: 10,
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                     columnDefs: [
@@ -423,6 +499,50 @@
                     if (!$.fn.DataTable.isDataTable('#data-table-responsive')) {
                         $('#data-table-responsive').DataTable({
                             responsive: true,
+                            dom: '<"row align-items-center mb-3"<"col-md-6 d-flex align-items-center gap-2"lB><"col-md-6"f>><"table-responsive"t><"row align-items-center mt-3"<"col-md-6"i><"col-md-6"p>>',
+                            buttons: [
+                                {
+                                    extend: 'collection',
+                                    text: '<i class="bx bx-export me-1"></i> Export',
+                                    className: 'btn btn-outline-secondary dropdown-toggle me-2',
+                                    buttons: [
+                                        {
+                                            extend: 'excelHtml5',
+                                            text: '<i class="bx bxs-file-export me-1 text-success"></i> Excel',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: ':not(:last-child)'
+                                            }
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            text: '<i class="bx bx-file me-1 text-info"></i> CSV',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: ':not(:last-child)'
+                                            }
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            text: '<i class="bx bxs-file-pdf me-1 text-danger"></i> PDF',
+                                            className: 'dropdown-item',
+                                            orientation: 'landscape',
+                                            pageSize: 'A4',
+                                            exportOptions: {
+                                                columns: ':not(:last-child)'
+                                            }
+                                        },
+                                        {
+                                            extend: 'print',
+                                            text: '<i class="bx bx-printer me-1 text-primary"></i> Print',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: ':not(:last-child)'
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
                             pageLength: 10,
                             lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                             columnDefs: [
