@@ -30,6 +30,32 @@ jobs:
             -o ./publish \
             --no-restore
 
+      - name: 🛑 Take App Offline (Unlock DLLs on IIS)
+        run: |
+          mkdir -p ./offline
+          cat << 'EOF' > ./offline/app_offline.htm
+          <!DOCTYPE html>
+          <html><head><title>Updating Site</title></head>
+          <body style="font-family:sans-serif;text-align:center;padding:50px;">
+            <h2>Site is being updated...</h2>
+            <p>Please wait a moment while we deploy the latest version.</p>
+          </body></html>
+          EOF
+
+      - name: 📤 Upload app_offline.htm to stop IIS process
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.MONSTERASP_FTP_SERVER }}
+          username: ${{ secrets.MONSTERASP_FTP_USERNAME }}
+          password: ${{ secrets.MONSTERASP_FTP_PASSWORD }}
+          local-dir: ./offline/
+          server-dir: /wwwroot/
+          protocol: ftp
+          port: 21
+
+      - name: ⏳ Wait for IIS AppPool to release DLL locks
+        run: sleep 10
+
       - name: 🚀 Deploy to MonsterASP.NET via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -40,3 +66,29 @@ jobs:
           server-dir: /wwwroot/
           protocol: ftp
           port: 21
+
+      - name: 🟢 Remove app_offline.htm to restart IIS
+        if: always()
+        run: |
+          python3 - << 'EOF'
+          import ftplib, os
+          server = os.environ['FTP_SERVER']
+          user = os.environ['FTP_USER']
+          passwd = os.environ['FTP_PASS']
+          try:
+              ftp = ftplib.FTP(server, timeout=30)
+              ftp.login(user, passwd)
+              ftp.cwd('/wwwroot')
+              try:
+                  ftp.delete('app_offline.htm')
+                  print("app_offline.htm removed successfully. Application restarted.")
+              except Exception as e:
+                  print("No app_offline.htm to delete or error:", e)
+              ftp.quit()
+          except Exception as ex:
+              print("FTP error:", ex)
+          EOF
+        env:
+          FTP_SERVER: ${{ secrets.MONSTERASP_FTP_SERVER }}
+          FTP_USER: ${{ secrets.MONSTERASP_FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.MONSTERASP_FTP_PASSWORD }}
