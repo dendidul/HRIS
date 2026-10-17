@@ -227,24 +227,48 @@
                                     {
                                         extend: 'excelHtml5',
                                         text: '<i class="bx bxs-file-export me-1 text-success"></i> Excel',
-                                        className: 'dropdown-item'
+                                        className: 'dropdown-item',
+                                        exportOptions: {
+                                            modifier: {
+                                                page: 'all',
+                                                search: 'applied'
+                                            }
+                                        }
                                     },
                                     {
                                         extend: 'csvHtml5',
                                         text: '<i class="bx bx-file me-1 text-info"></i> CSV',
-                                        className: 'dropdown-item'
+                                        className: 'dropdown-item',
+                                        exportOptions: {
+                                            modifier: {
+                                                page: 'all',
+                                                search: 'applied'
+                                            }
+                                        }
                                     },
                                     {
                                         extend: 'pdfHtml5',
                                         text: '<i class="bx bxs-file-pdf me-1 text-danger"></i> PDF',
                                         className: 'dropdown-item',
                                         orientation: 'landscape',
-                                        pageSize: 'A4'
+                                        pageSize: 'A4',
+                                        exportOptions: {
+                                            modifier: {
+                                                page: 'all',
+                                                search: 'applied'
+                                            }
+                                        }
                                     },
                                     {
                                         extend: 'print',
                                         text: '<i class="bx bx-printer me-1 text-primary"></i> Print',
-                                        className: 'dropdown-item'
+                                        className: 'dropdown-item',
+                                        exportOptions: {
+                                            modifier: {
+                                                page: 'all',
+                                                search: 'applied'
+                                            }
+                                        }
                                     }
                                 ]
                             }
