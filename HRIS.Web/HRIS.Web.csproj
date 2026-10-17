@@ -29,4 +29,8 @@
     <Folder Include="wwwroot\js\Controller\TimeManagement\" />
   </ItemGroup>
 
+  <!-- Override MSBuild targets that crash with OutOfMemoryException on low-RAM cloud build environments -->
+  <Target Name="GenerateStaticWebAssetsManifest" />
+  <Target Name="GenerateStaticWebAssetsPublishManifest" />
+
 </Project>
